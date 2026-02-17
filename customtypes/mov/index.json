@@ -1,0 +1,37 @@
+{
+  "format": "custom",
+  "id": "mov",
+  "label": "mov",
+  "repeatable": true,
+  "status": true,
+  "json": {
+    "Main": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "ID",
+          "placeholder": ""
+        }
+      },
+      "thumb": {
+        "type": "Image",
+        "config": {
+          "label": "thumb",
+          "constraint": {},
+          "thumbnails": []
+        }
+      },
+      "post": {
+        "type": "Link",
+        "config": {
+          "label": "post",
+          "placeholder": "",
+          "select": null,
+          "allowTargetBlank": true,
+          "allowText": false,
+          "repeat": true
+        }
+      }
+    }
+  }
+}

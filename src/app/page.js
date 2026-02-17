@@ -1,131 +1,86 @@
-"use client";
-import { useRef, useEffect } from 'react';
-import gsap from 'gsap';
-import { Observer } from 'gsap/Observer';
-import TransitionLink from '../components/TransitionLink';
-import './2D.css';
+import { createClient } from "@/prismicio";
+import TwoDPageClient from "@/components/TwoDPageClient";
 
-export default function TwoDPage() {
-  useEffect(() => {
-    gsap.registerPlugin(Observer);
+/**
+ * Prismic の mov から動画＋サムネイルを取得。
+ * - Link to Media フィールド（API ID は何でも可）から動画URL
+ * - thumb: Image から読み込み中用サムネイル
+ */
+function getVideoUrlFromDoc(data) {
+  if (!data || typeof data !== "object") return null;
+  // post 配列（Repeatable Link to Media）の先頭から動画URLを取得
+  const post = data.post;
+  if (Array.isArray(post) && post.length > 0) {
+    const first = post[0];
+    if (first && typeof first === "object" && first.link_type === "Media" && first.url) {
+      return first.url;
+    }
+  }
+  // 単一フィールド: video / movie / media など
+  for (const key of ["video", "movie", "media", "link_to_media"]) {
+    const field = data[key];
+    if (field && typeof field === "object" && "url" in field && field.url) {
+      return field.url;
+    }
+  }
+  for (const value of Object.values(data)) {
+    if (
+      value &&
+      typeof value === "object" &&
+      "link_type" in value &&
+      value.link_type === "Media" &&
+      value.url
+    ) {
+      return value.url;
+    }
+  }
+  return null;
+}
 
-    const container = document.querySelector('.infinite-scroll-container .container');
-    if (!container) return;
+/**
+ * ソート用の値を取得（数が大きい＝新しい＝先頭に表示）
+ * Prismic の Number フィールド（API ID: order または number）があればそれを使用、なければ公開日
+ */
+function getSortKey(doc) {
+  const data = doc.data || {};
+  const num = data.order ?? data.number;
+  if (typeof num === "number") return num;
+  if (typeof num === "string" && num !== "") return Number(num) || 0;
+  return doc.first_publication_date || doc.last_publication_date || doc.uid || "";
+}
 
-    let halfX = 0;
-    let halfY = 0;
-
-    // Function to update dimensions (responsive support)
-    const updateDimensions = () => {
-      const content = document.querySelector('.infinite-scroll-container .content'); // Target the first content block
-      if (content) {
-        halfX = content.offsetWidth; // Use exact rendered width of one block
-        halfY = content.offsetHeight; // Use exact rendered height of one block
-      }
-    };
-
-    // Initial calculation
-    // Defer slightly to ensure layout
-    setTimeout(updateDimensions, 100);
-
-    // Recalculate on resize
-    window.addEventListener('resize', updateDimensions);
-
-    let xTo = gsap.quickTo(container, 'x', {
-      duration: 1.5,
-      ease: "power4",
-      modifiers: {
-        x: (x) => gsap.utils.unitize(gsap.utils.wrap(-halfX, 0))(x) // Dynamic wrapping
-      }
+async function getVideos() {
+  try {
+    const client = createClient();
+    const response = await client.getAllByType("mov");
+    const videos = response
+      .map((doc) => {
+        const videoUrl = getVideoUrlFromDoc(doc.data);
+        const thumbUrl = doc.data?.thumb?.url ?? null;
+        if (!videoUrl) return null;
+        return { src: videoUrl, thumb: thumbUrl, _sortKey: getSortKey(doc) };
+      })
+      .filter(Boolean);
+    // 数が大きいものから（降順）→ 先頭が「中心」のメイン
+    videos.sort((a, b) => {
+      const ka = a._sortKey;
+      const kb = b._sortKey;
+      if (typeof ka === "number" && typeof kb === "number") return kb - ka;
+      return String(kb).localeCompare(String(ka), undefined, { numeric: true });
     });
+    return videos.map(({ _sortKey, ...v }) => v);
+  } catch (err) {
+    console.error("[Prismic] getVideos failed:", err);
+    return [];
+  }
+}
 
-    let yTo = gsap.quickTo(container, 'y', {
-      duration: 1.5,
-      ease: "power4",
-      modifiers: {
-        y: (y) => gsap.utils.unitize(gsap.utils.wrap(-halfY, 0))(y) // Dynamic wrapping
-      }
-    });
-
-    let incrX = 0, incrY = 0;
-
-    // Observer to handle wheel and drag events
-    const observer = Observer.create({
-      target: window,
-      type: "wheel,touch,pointer", // Handles wheel, touch, and drag
-      onChangeX: (self) => {
-        // Determine direction based on event type
-        if (self.event.type === "wheel")
-          incrX -= self.deltaX;
-        else
-          incrX += self.deltaX * 2;
-
-        xTo(incrX);
-      },
-      onChangeY: (self) => {
-        if (self.event.type === "wheel")
-          incrY -= self.deltaY;
-        else
-          incrY += self.deltaY * 2;
-
-        yTo(incrY);
-      }
-    });
-
-    return () => {
-      window.removeEventListener('resize', updateDimensions);
-      observer.kill();
-    };
-  }, []);
-
-  // Create array for videos to avoid repetition in code
-  const videos = [
-    "/mov/1.mov", "/mov/2.mov", "/mov/3.mov", "/mov/4.mp4", "/mov/5.mp4",
-    "/mov/6.mp4", "/mov/1.mov", "/mov/2.mov",
-    "/mov/3.mov", "/mov/4.mp4", "/mov/5.mp4", "/mov/6.mp4",
-  ];
-
-  return (
-    <main>
-      <section>
-        <div className="corner-element title">
-          <div className="switch">
-            <TransitionLink href="/" className="btn-2D">LIFE</TransitionLink>
-            <TransitionLink href="/3D" className="btn-3D">PORTFOLIO</TransitionLink>
-          </div>
-          <TransitionLink href="/about">FUMILIFE</TransitionLink>
-        </div>
-
-        <div className="corner-element sns">
-          <ul className="sns-list">
-            <li><a href="https://www.instagram.com/ryo_taro.__" target="_blank" rel="noopener noreferrer">Instagram</a></li>
-            <li><a href="https://www.youtube.com/@ryo_taro_07" target="_blank" rel="noopener noreferrer">Youtube</a></li>
-            <li><a href="#" target="_blank" rel="noopener noreferrer">X</a></li>
-          </ul>
-        </div>
-
-        <div className="corner-element info">
-          <span className="year">2026</span>
-          <div className="concept">
-            <div>concept</div>
-            <div>description</div>
-          </div>
-        </div>
-      </section>
-
-      <section className="infinite-scroll-container">
-        <div className="container">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="content" aria-hidden={i > 0}>
-              {videos.map((src, idx) => (
-                <div key={idx} className="media">
-                  <video src={src} autoPlay loop muted playsInline />
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
-    </main>
-  );
+export default async function Page() {
+  let videos = [];
+  try {
+    videos = await getVideos();
+  } catch (err) {
+    console.error("[Prismic] Page getVideos:", err);
+  }
+  return <TwoDPageClient videos={videos} />;
 }

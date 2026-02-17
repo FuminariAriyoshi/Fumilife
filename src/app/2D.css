@@ -17,9 +17,22 @@ body {
     color: #eeeeee;
     overflow: hidden;
     font-family: 'Inter', sans-serif;
-    font-weight: 500;
+    font-weight: 400;
     overflow: hidden;
     overscroll-behavior-x: none;
+    transition: background-color 0.3s ease;
+}
+
+body[data-theme="light"] {
+    background: #eeeeee;
+    color: #111;
+}
+
+/* 2Dページの main（LIFE / 動画グリッド）が確実に表示されるように */
+body main {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
 }
 
 h1,
@@ -31,6 +44,7 @@ h6 {
     font-weight: inherit;
 }
 
+
 .infinite-scroll-container {
     height: 100vh;
     width: 100%;
@@ -41,10 +55,9 @@ h6 {
 .infinite-scroll-container .container {
     display: grid;
     grid-template-columns: repeat(2, auto);
-    /* 2 items par row */
     width: max-content;
     will-change: transform;
-    /* This element will undergo many transformations */
+    transform-origin: 0 0;
     margin: 0;
     padding: 0;
     column-gap: 0;
@@ -55,17 +68,31 @@ h6 {
     pointer-events: none;
     display: grid;
     width: max-content;
-    grid-template-columns: repeat(5, 1fr);
-    /* 5 items par row */
+    grid-template-columns: repeat(var(--grid-cols, 5), 1fr);
     gap: 5vw;
     padding: 2.5vw;
-    /* We reproduce half of the gap around the division */
+    place-items: center;
+}
+
+.infinite-scroll-container .content--empty {
+    min-height: 40vh;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+}
+
+.infinite-scroll-container .content__empty-msg {
+    color: #888;
+    font-size: 14px;
+    padding: 2rem;
+    margin: 0;
 }
 
 .infinite-scroll-container .media {
-    width: 25vw;
-    aspect-ratio: 1;
+    width: 13vw;
+    aspect-ratio: 1; /* 動画メタデータ取得後は VideoWithThumb の style で上書き */
     user-select: none;
+    min-height: 0;
 }
 
 .infinite-scroll-container .media img,
@@ -74,6 +101,31 @@ h6 {
     height: 100%;
     display: block;
     object-fit: contain;
+}
+
+/* 動画読み込み中はサムネイルを表示 */
+.infinite-scroll-container .media.media--video {
+    position: relative;
+}
+
+.infinite-scroll-container .media__thumb {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.infinite-scroll-container .media__video {
+    position: relative;
+    z-index: 0;
+}
+
+.infinite-scroll-container .media__video.media__video--loading {
+    opacity: 0;
+    position: absolute;
+    inset: 0;
 }
 
 @media (max-width: 768px) {
@@ -90,41 +142,13 @@ h6 {
     }
 }
 
-.switch {
-    display: flex;
-    width: auto;
-    align-items: center;
-    border: 0.5px solid #FFF;
-    padding: 0px 10 0px 10px;
-    z-index: 1000;
-}
 
-.btn-2D {
-    flex: 1 0 0;
-    color: white;
-    text-align: center;
-    mix-blend-mode: difference;
-    margin-right: 10px;
-    font-size: 1.2rem;
-    text-decoration: none;
-    font-weight: 200;
-}
-
-.btn-3D {
-    flex: 1 0 0;
-    color: white;
-    text-align: center;
-    mix-blend-mode: difference;
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: 200;
-}
 
 /* Corner Elements Style */
 .corner-element {
     position: fixed;
     z-index: 999;
-    font-weight: 200;
+    font-weight: 400;
     font-size: 1rem;
     color: white;
     opacity: 0.8;
@@ -135,17 +159,86 @@ h6 {
 }
 
 .corner-element.title {
+    padding: 0 16px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    justify-content: space-between;
     align-items: center;
 }
 
-.concept {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+.btn-container-wrapper {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
 }
+
+.btn-container {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+}
+
+.GrdLst-container-wrapper {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+}
+
+.GrdLst-container {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+}
+
+.GrdLst-container a {
+    text-decoration: none;
+    border: none;
+    border-bottom: none;
+}
+
+body[data-theme="light"] .GrdLst-container .btn {
+    color: #111;
+    mix-blend-mode: normal;
+    opacity: 0.7;
+}
+
+body[data-theme="light"] .GrdLst-container .btn:hover {
+    opacity: 0.9;
+}
+
+body[data-theme="light"] .GrdLst-container .btn--active {
+    opacity: 1;
+    color: #111;
+}
+
+.btn {
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    color: white;
+    mix-blend-mode: difference;
+    letter-spacing: 0.05em;
+    mix-blend-mode: difference;
+    cursor: pointer;
+    outline: none;
+    opacity: 0.5;
+}
+
+.btn:active {
+    opacity: 1;
+}
+
+.btn--active {
+    opacity: 1;
+}
+
 
 
 /* List handling */
@@ -166,7 +259,9 @@ h6 {
 
 .title {
     top: 20px;
+    left: 0;
     right: 20px;
+    width: auto; /* left+right で幅を取る（width:100% + right だと左がはみ出して見切れる） */
 }
 
 .sns {
@@ -185,5 +280,5 @@ h6 {
 .corner-element a {
     color: white;
     text-decoration: none;
-    font-weight: 200;
+    font-weight: 400;
 }
