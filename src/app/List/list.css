@@ -29,7 +29,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
+    gap: 7.5vh;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -40,10 +40,10 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 7.5vh;
+    gap: 20px;
     /* max-width: calc(100vw - 200px - 40px); サイドバー幅 + gap */
     max-width: 568px;
-    max-height: 90vh;
+    max-height: 70vh;
             /* サイドバー幅 + gap */
 }
 
@@ -53,9 +53,10 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 7.5vh;
+    /* gap: 7.5vh; */
     max-width: 568px;
-    max-height: 90vh;
+    max-height: 0vh;
+aspect-ratio: 9 / 16;
     opacity: 1;
 }
 
@@ -63,21 +64,30 @@
 .list-page__video-wrapper--next {
     width: 100%;
     height: 100%;
-    background: #1a1a1a;
+    background: #f5f5f5;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+body[data-theme="dark"] .list-page__video-wrapper--prev,
+body[data-theme="dark"] .list-page__video-wrapper--next {
+    background: #1a1a1a;
+}
+
 .list-page__video-wrapper {
     width: 100%;
     height: 100%;
-    background: #1a1a1a;
+    background: #f5f5f5;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+body[data-theme="dark"] .list-page__video-wrapper {
+    background: #1a1a1a;
 }
 
 /* 横型の動画：幅568pxで止まって全体が見える */
@@ -106,7 +116,7 @@
     flex-direction: column;
     gap: 8px;
     font-size: 14px;
-    color: #888;
+    color: #666;
     font-weight: 200;
 }
 
@@ -150,7 +160,7 @@
 .list-page__item {
     width: 100%;
     height: auto;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
     border: none;
     padding: 0;
     cursor: pointer;
@@ -159,12 +169,12 @@
 }
 
 .list-page__item:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.08);
 }
 
 .list-page__item--active {
     border: none;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
 }
 
 .list-page__thumb {
@@ -177,12 +187,12 @@
 .list-page__thumb-placeholder {
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .list-page_line {
     position: fixed;
-    border: 0.2px solid white;
+    border: 0.2px solid black;
     opacity: 0.8;
     mix-blend-mode: difference;
     pointer-events: none;
@@ -192,36 +202,39 @@
     /* サイズとleft位置はJSで動的に設定 */
 }
 
-body[data-theme="light"] .list-page__video-wrapper {
-    background: #f5f5f5;
+/* dark themeスタイル */
+body[data-theme="dark"] .list-page__video-wrapper {
+    background: #1a1a1a;
 }
 
-body[data-theme="light"] .list-page__info {
-    color: #666;
+body[data-theme="dark"] .list-page__info {
+    color: #888;
 }
 
-body[data-theme="light"] .list-page__item {
-    background: rgba(0, 0, 0, 0.05);
+body[data-theme="dark"] .list-page__item {
+    background: rgba(255, 255, 255, 0.05);
     border: none;
 }
 
-body[data-theme="light"] .list-page__item:hover {
-    background: rgba(0, 0, 0, 0.08);
+body[data-theme="dark"] .list-page__item:hover {
+    background: rgba(255, 255, 255, 0.08);
 }
 
-body[data-theme="light"] .list-page__item--active {
+body[data-theme="dark"] .list-page__item--active {
     border: none;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.1);
 }
 
-body[data-theme="light"] .list-page__thumb-placeholder {
-    background: rgba(0, 0, 0, 0.05);
+body[data-theme="dark"] .list-page__thumb-placeholder {
+    background: rgba(255, 255, 255, 0.05);
 }
 
-body[data-theme="light"] .list-page_line {
+body[data-theme="dark"] .list-page_line {
+    mix-blend-mode: difference;
+    border-color: white;
+    opacity: 0.8;
     mix-blend-mode: difference;
     border-color: black;
-    opacity: 0.8;
 }
 
 @media (max-width: 768px) {

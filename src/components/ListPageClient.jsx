@@ -32,6 +32,7 @@ export default function ListPageClient({ videos = [] }) {
   const lineRef = useRef(null);
   const lineAnimationRef = useRef(null);
   const isFirstRenderRef = useRef(true);
+  const isFirstMainWrapperRenderRef = useRef(true); // updateMainWrapperPosition専用の初回レンダリングフラグ
   const itemRefs = useRef([]);
   const listRef = useRef(null);
   const sidebarRef = useRef(null); // sidebar全体のref
@@ -141,27 +142,35 @@ export default function ListPageClient({ videos = [] }) {
     const main = mainRef.current;
     if (!wrapper || !main) return;
 
+    // 既存のアニメーションを停止
+    gsap.killTweensOf(wrapper);
+    
+    // 現在のtransformを取得
+    const currentTranslateY = parseFloat(gsap.getProperty(wrapper, "y")) || 0;
+    
     // transformを一時的にリセットして正確な位置を取得
     gsap.set(wrapper, { y: 0 });
     
-    // リセット後の位置を取得
-    const mainRect = main.getBoundingClientRect();
-    const mainHeight = mainRect.height;
-    const mainTop = mainRect.top;
-    const mainCenterY = mainTop + mainHeight / 2;
-    
-    // 画面の中心位置
-    const viewportHeight = window.innerHeight;
-    const viewportCenterY = viewportHeight / 2;
-    
-    // 必要な移動距離を計算
-    const targetTranslateY = viewportCenterY - mainCenterY;
-    
-    // wrapper全体を動かしてmainが画面の中心に来るように（GSAPでアニメーション）
-    gsap.to(wrapper, {
-      y: targetTranslateY,
-      duration: animate ? 0.6 : 0,
-      ease: "power2.inOut",
+    // リセット後の位置を取得（DOMが完全にレンダリングされるまで少し待つ）
+    requestAnimationFrame(() => {
+      const mainRect = main.getBoundingClientRect();
+      const mainHeight = mainRect.height;
+      const mainTop = mainRect.top;
+      const mainCenterY = mainTop + mainHeight / 2;
+      
+      // 画面の中心位置
+      const viewportHeight = window.innerHeight;
+      const viewportCenterY = viewportHeight / 2;
+      
+      // 必要な移動距離を計算
+      const targetTranslateY = viewportCenterY - mainCenterY;
+      
+      // wrapper全体を動かしてmainが画面の中心に来るように（GSAPでアニメーション）
+      gsap.to(wrapper, {
+        y: targetTranslateY,
+        duration: animate ? 0.6 : 0,
+        ease: "power2.inOut",
+      });
     });
   }
 
@@ -280,16 +289,22 @@ export default function ListPageClient({ videos = [] }) {
 
   // wrapper全体を動かして中央のmainが画面のy座標中心に配置
   useEffect(() => {
-    const isFirstRender = isFirstRenderRef.current;
-    const delay = isFirstRender ? 100 : 0;
+    const isFirstRender = isFirstMainWrapperRenderRef.current;
+    const delay = isFirstRender ? 200 : 100; // prev/nextのレンダリングを待つため少し長めに
     
     const handleResize = () => {
       updateMainWrapperPosition(true);
     };
     
     const timeoutId = setTimeout(() => {
+      // 複数のrequestAnimationFrameで確実にDOMがレンダリングされるまで待つ
       requestAnimationFrame(() => {
-        updateMainWrapperPosition(!isFirstRender);
+        requestAnimationFrame(() => {
+          // selectedIndexが変更された時は常にアニメーション、初回レンダリング時のみ即座に設定
+          const shouldAnimate = !isFirstRender;
+          updateMainWrapperPosition(shouldAnimate);
+          isFirstMainWrapperRenderRef.current = false;
+        });
       });
     }, delay);
     
@@ -300,7 +315,7 @@ export default function ListPageClient({ videos = [] }) {
       window.removeEventListener("resize", handleResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedIndex, selectedVideo]);
+  }, [selectedIndex]);
 
   // 選択中のボタン（サムネイル）にlineをアニメーション
   useEffect(() => {
