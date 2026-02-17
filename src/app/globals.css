@@ -1,0 +1,547 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@50;100;200;400;500;700&display=swap');
+
+
+/* Chrome, Safari, Edge 用 */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox 用 */
+html {
+  scrollbar-width: none;
+}
+
+/* Internet Explorer/古いEdge 用 */
+body {
+  -ms-overflow-style: none;
+}
+
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Enable vertical scrolling */
+}
+
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: inherit;
+}
+
+.header {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  z-index: 10;
+}
+
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+#hero-section {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 40px;
+  box-sizing: border-box;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  /* Right align the menu */
+}
+
+.header nav {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.header nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  /* gap: 40px; */
+  /* Space between items */
+}
+
+.header nav li {
+  margin: 0;
+}
+
+.header nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  opacity: 1;
+}
+
+.header nav a:hover {
+  opacity: 1.0;
+}
+
+.hero-text {
+  margin: 0;
+  font-size: 16vw;
+  /* Responsive font size to fit screen width */
+  color: white;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  opacity: 1;
+  pointer-events: none;
+  white-space: nowrap;
+  /* Prevent line break */
+  z-index: 1;
+  /* Ensure text is above canvas */
+  mix-blend-mode: difference;
+}
+
+#main-section {
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  /* Changed to absolute to overlay */
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  background: black;
+  /* Opaque background? Or transparent? */
+  z-index: 20;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  opacity: 1;
+  visibility: visible;
+}
+
+.content-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: black;
+  z-index: 50;
+  /* Higher than hero */
+  overflow-y: auto;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  opacity: 1;
+  visibility: visible;
+  padding: 80px 40px;
+  /* Space for close button */
+  box-sizing: border-box;
+}
+
+.content-section.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.close-section {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  background: none;
+  border: none;
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+  z-index: 60;
+}
+
+.container {
+  color: white;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.container h2 {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+.container p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+#controllers {
+  z-index: 1;
+  z-index: 1;
+  position: absolute;
+  /* Changed from fixed */
+  top: 0;
+  left: 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+}
+
+.button {
+  border: none;
+  background: white;
+  color: black;
+  padding: 8px 20px;
+  cursor: pointer;
+  outline: none;
+  margin: 5px;
+}
+
+/* Text Styles - No active class, managed by GSAP */
+.text {
+  margin: 0;
+  font-size: 15vw;
+  color: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  opacity: 0;
+  /* Default hidden */
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .text {
+    font-size: 200px;
+    letter-spacing: -12px;
+    top: 4px;
+    left: 4px;
+    transform: none;
+  }
+}
+
+.explore {
+  color: #FFF;
+  font-family: Inter;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 100;
+  line-height: normal;
+  letter-spacing: -1.44px;
+  margin: 0;
+}
+
+.arrow {
+  z-index: 10;
+  width: 10px;
+  height: 12px;
+  stroke: white;
+  stroke-width: 1;
+  stroke-linejoin: bevel;
+}
+
+.explore-container {
+  display: flex;
+  width: auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  /* transition removed */
+}
+
+.explore-wrapper,
+.arrow-wrapper {
+  overflow: hidden;
+}
+
+/* Viewer Styles - No hidden class, managed by GSAP */
+.img-viewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  opacity: 0;
+  /* Default hidden */
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* Iframe Details Style */
+/* Iframe/Image Details Style */
+.viewer-content {
+  width: auto;
+  min-width: 50%;
+  max-width: 90%;
+  height: auto;
+  max-height: 80vh;
+  border-radius: 11px;
+  object-fit: contain;
+  background: transparent;
+  display: none;
+  /* Hide all initially */
+}
+
+
+.close-img {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 40px;
+  cursor: pointer;
+  z-index: 101;
+}
+
+.close-img:hover {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.img-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow-y: hidden;
+  /* Default hidden */
+  pointer-events: none;
+  visibility: hidden;
+  display: none;
+  /* Hide via display as well to prevent layout space usage */
+  position: relative;
+  /* For absolute positioning of slider if needed, or just overflow context */
+  overflow: hidden;
+  /* Hide off-screen images */
+}
+
+.images-slider {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Will be translated via GSAP */
+}
+
+.viewer-content {
+  /* ... existing styles ... */
+  display: block;
+  /* Ensure visible for slider */
+  margin-bottom: 50vh;
+  /* Spacing between images? Or just let them stack */
+}
+
+
+.progress {
+  position: fixed;
+  top: 63px;
+  left: 80%;
+  transform: translateX(-50%);
+  width: auto;
+  height: 40px;
+  z-index: 1000;
+  cursor: pointer;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.progress-indicator {
+  position: relative;
+  width: auto;
+  height: 12px;
+  opacity: 0;
+  pointer-events: none;
+  flex-shrink: 0;
+  transform: translateZ(0);
+  overflow: visible;
+}
+
+.progress-indicator rect {
+  vector-effect: non-scaling-stroke;
+  shape-rendering: crispedges;
+}
+
+
+@media (min-width: 787px) {
+  .progress-indicator.active {
+    width: 21px;
+    height: 12px;
+    background-color: transparent;
+    border: 1px solid white;
+    transform: none;
+  }
+}
+
+#container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 0;
+  touch-action: none;
+}
+
+
+.page-indicator {
+  position: fixed;
+  bottom: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+  color: white;
+  opacity: 0.3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.page-indicator span {
+  display: block;
+  transform: translateY(100%);
+}
+
+@media screen and (max-width: 786px) {
+  .page-indicator {
+    bottom: auto;
+    /* left: auto; */
+    right: 40px;
+    left: auto;
+    /* Position it to the left of the vertical progress bar */
+    top: 50dvh;
+    transform: translateY(-50%);
+  }
+}
+
+
+.overview {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* Allow clicks to pass through */
+  z-index: 110;
+  /* Above main viewer */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 40px;
+  box-sizing: border-box;
+}
+
+.overview-content {
+  max-width: 100px;
+  height: auto;
+  max-height: 80vh;
+  display: none;
+  /* Toggled by JS */
+  flex-direction: column;
+  overflow-y: auto;
+  pointer-events: auto;
+  gap: 1.66vh;
+  /* Re-enable clicks for the sidebar itself */
+}
+
+/* Specific styles for images inside overview sidebar */
+.overview-content .viewer-content {
+  display: block;
+  /* Force visible */
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: auto;
+  max-height: none;
+  margin: 0;
+  opacity: 1;
+}
+
+.overview-content img {
+  width: 80px;
+  height: auto;
+  max-height: 80vh;
+  object-fit: contain;
+  background: transparent;
+  display: block;
+}
+
+@media (max-width: 1300px) {
+  .overview {
+    display: none;
+  }
+}
+
+
+.overview-line {
+  width: 90px;
+  height: 70px;
+  border: 0.2px solid white;
+  opacity: 0;
+  mix-blend-mode: difference;
+  position: absolute;
+  top: 50%;
+  right: 35px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 111;
+}

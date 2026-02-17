@@ -1,0 +1,30 @@
+{
+  "name": "temp_next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "lil-gui": "^0.21.0",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@prismicio/client": "^7.21.6",
+    "@prismicio/next": "^2.2.1",
+    "@prismicio/react": "^3.3.0",
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "gsap": "^3.14.2",
+    "raw-loader": "^4.0.2",
+    "slice-machine-ui": "^2.21.1",
+    "tailwindcss": "^4",
+    "three": "^0.182.0"
+  }
+}
