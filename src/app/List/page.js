@@ -52,8 +52,8 @@ async function getVideos() {
         };
       })
       .filter(Boolean);
-    // ID順でソート（文字列として比較）
-    videos.sort((a, b) => a.id.localeCompare(b.id));
+    // ID順でソート（大きい順、降順）
+    videos.sort((a, b) => b.id.localeCompare(a.id));
     return videos;
   } catch (err) {
     console.error("[Prismic] getVideos failed:", err);
