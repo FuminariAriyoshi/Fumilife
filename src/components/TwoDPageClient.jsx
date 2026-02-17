@@ -9,10 +9,16 @@ import "../app/2D.css";
  * https://madewithgsap.com/effects/tutorial026
  */
 
-/** 動画数 N に対して空セルが最少になる列数を返す（3〜6列を優先）。display: grid 用 */
+/** 動画数 N に対して空セルが0になる列数を返す（3〜6列を優先）。空セル0が無理な場合は最少の列数を返す。 */
 function getOptimalGridCols(N) {
   if (N <= 0) return 1;
   const prefer = [4, 5, 3, 6, 2, 7, 8]; // 見た目優先順
+  // まず空セル0（割り切れる）の列数を探す
+  for (const cols of prefer) {
+    if (cols > N) continue;
+    if (N % cols === 0) return cols; // 割り切れる = 空セル0
+  }
+  // 空セル0が無理な場合は最少の列数を返す
   let bestCols = 1;
   let minEmpty = N;
   for (const cols of prefer) {
