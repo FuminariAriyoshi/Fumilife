@@ -10,6 +10,7 @@
     "slicemachine": "start-slicemachine"
   },
   "dependencies": {
+    "@barba/core": "^2.10.3",
     "lil-gui": "^0.21.0",
     "next": "16.1.6",
     "react": "19.2.3",

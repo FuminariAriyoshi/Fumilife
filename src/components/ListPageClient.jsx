@@ -89,6 +89,8 @@ export default function ListPageClient({ videos = [] }) {
             ))}
           </div>
         </div>
+
+        <div className="list-page_line"></div>
       </div>
     </main>
   );
