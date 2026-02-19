@@ -2,7 +2,10 @@
 
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
+import { runLoadPageLeave } from "@/lib/barbaTransition";
 import "../app/load.css";
+
+const RIGHT_TEXTS = ["WHO FUMI IS", "WHAT FUMI VALUES", "HOW FUMI THINKS"];
 
 /**
  * ロードページ（Figmaデザイン準拠）
@@ -13,54 +16,86 @@ export default function LoadPage({ images = [], onComplete }) {
   const [isVisible, setIsVisible] = useState(true);
   const containerRef = useRef(null);
   const imagesRef = useRef(null);
+  const rightTextsRef = useRef(null);
   const startTimeRef = useRef(Date.now());
   const timelineRef = useRef(null);
 
-  // Tutorial 037風: 時間経過で画像をフェードイン/アウト（グラデーションマスク）
-  useEffect(() => {
-    if (images.length === 0 || !imagesRef.current) return;
-
-    const imageElements = imagesRef.current.querySelectorAll(".load-page__image-wrapper");
-    if (imageElements.length === 0) return;
-
-    // タイムラインを作成
-    const tl = gsap.timeline({ repeat: -1 }); // 無限ループ
-    timelineRef.current = tl;
+  function imageAnimation(tl) {
+    const imageElements = imagesRef.current?.querySelectorAll(".load-page__image-wrapper");
+    if (!imageElements?.length) return;
 
     imageElements.forEach((wrapper, index) => {
       const img = wrapper.querySelector(".load-page__image");
       if (!img) return;
 
-      // 最初の画像は即座に表示
       if (index === 0) {
         gsap.set(wrapper, { opacity: 1 });
       } else {
         gsap.set(wrapper, { opacity: 0 });
       }
 
-      // 各画像のフェードイン/アウト（1秒ごと）
-      const fadeInTime = index * 1.0; // 1秒間隔
-      const fadeOutTime = fadeInTime + 0.8; // 0.8秒表示後フェードアウト
+      const fadeInTime = index * 1.0;
+      const fadeOutTime = fadeInTime + 0.8;
 
       tl.to(
         wrapper,
         {
+          maskImage: "linear-gradient(transparent -25%, #000 0%, #000 100%)",
           opacity: 1,
-          duration: 0.4,
+          duration: 0.8,
           ease: "power2.inOut",
         },
         fadeInTime
-      )
-        .to(
-          wrapper,
-          {
-            opacity: 0,
-            duration: 0.4,
-            ease: "power2.inOut",
-          },
-          fadeOutTime
-        );
+      ).to(
+        wrapper,
+        {
+          duration: 0.8,
+          ease: "power2.inOut",
+        },
+        fadeOutTime
+      );
     });
+  }
+
+  function textAnimation(tl, imageCount) {
+    const textEls = rightTextsRef.current?.querySelectorAll(".load-page__right");
+    if (!textEls || textEls.length !== RIGHT_TEXTS.length) return;
+
+    // テキスト初期状態: 1本目だけ表示
+    gsap.set(textEls[0], { opacity: 1 });
+    gsap.set(textEls[1], { opacity: 0 });
+    gsap.set(textEls[2], { opacity: 0 });
+
+    // 画像が切り替わるタイミングでテキストも切り替え
+    for (let index = 0; index < imageCount; index++) {
+      const fadeInTime = index * 1.0;
+      const prevIdx = (index - 1 + RIGHT_TEXTS.length) % RIGHT_TEXTS.length;
+      const currIdx = index % RIGHT_TEXTS.length;
+      tl.to(
+        textEls[prevIdx],
+        { opacity: 0, duration: 0.25, ease: "power2.inOut" },
+        fadeInTime
+      );
+      tl.to(
+        textEls[currIdx],
+        { opacity: 1, duration: 0.4, ease: "power2.inOut" },
+        fadeInTime + 0.1
+      );
+    }
+  }
+
+  // Tutorial 037風: 時間経過で画像をフェードイン/アウト + テキスト同期
+  useEffect(() => {
+    if (images.length === 0 || !imagesRef.current) return;
+
+    const imageElements = imagesRef.current.querySelectorAll(".load-page__image-wrapper");
+    if (imageElements.length === 0) return;
+
+    const tl = gsap.timeline({ repeat: -1 });
+    timelineRef.current = tl;
+
+    imageAnimation(tl);
+    textAnimation(tl, imageElements.length);
 
     return () => {
       if (timelineRef.current) {
@@ -79,26 +114,20 @@ export default function LoadPage({ images = [], onComplete }) {
       const remaining = Math.max(0, minDisplayTime - elapsed);
 
       setTimeout(() => {
-        // タイムラインを停止
         if (timelineRef.current) {
           timelineRef.current.kill();
         }
-        // 上に上がるアニメーション（barba.js風）
-        gsap.to(container, {
-          y: "-100%",
-          duration: 1.2,
-          ease: "power4.inOut",
-          onComplete: () => {
-            setIsVisible(false);
-            if (onComplete) onComplete();
-          },
+        // barba の once 相当: ロード画面用 leave
+        runLoadPageLeave(container).then(() => {
+          setIsVisible(false);
+          if (onComplete) onComplete();
         });
       }, remaining);
     };
 
     // ページ読み込み完了を待つ
     if (document.readyState === "complete") {
-      checkAndHide();
+      // checkAndHide();
     } else {
       window.addEventListener("load", checkAndHide);
       return () => window.removeEventListener("load", checkAndHide);
@@ -134,8 +163,14 @@ export default function LoadPage({ images = [], onComplete }) {
           </div>
         </div>
 
-        {/* 右: WHO IS FUMI */}
-        <div className="load-page__right">WHO IS FUMI</div>
+        {/* 右: 画像切り替えに同期してテキストアニメーション */}
+        <div ref={rightTextsRef} className="load-page__right-container">
+          {RIGHT_TEXTS.map((line) => (
+            <div key={line} className="load-page__right">
+              {line}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

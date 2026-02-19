@@ -1,4 +1,3 @@
-
 import "./globals.css";
 import TransitionLink from "../components/TransitionLink";
 import BtnContainer from "../components/BtnContainer";
@@ -7,13 +6,43 @@ import Cursor from "../components/Cursor";
 import GoogleAnalytics from "../components/GoogleAnalytics";
 import PageTransition from "../components/PageTransition";
 import GrdLstContainer from "../components/GrdLstContainer";
+import LoadPageWrapper from "../components/LoadPageWrapper";
+import { createClient } from "@/prismicio";
 
 export const metadata = {
   title: "FUMILIFE",
   description: "Who is Fumi? How does Fumi think? What does Fumi do?",
 };
 
-export default function RootLayout({ children }) {
+/**
+ * LoadPage用の画像を取得（IDが大きい順）
+ */
+async function getLoadImages() {
+  try {
+    const client = createClient();
+    const response = await client.getAllByType("mov");
+    const images = response
+      .map((doc) => {
+        const thumbUrl = doc.data?.thumb?.url ?? null;
+        if (!thumbUrl) return null;
+        return {
+          id: doc.id,
+          url: thumbUrl,
+        };
+      })
+      .filter(Boolean);
+    // IDが大きい順にソート
+    images.sort((a, b) => b.id.localeCompare(a.id));
+    return images.map((img) => img.url);
+  } catch (err) {
+    console.error("[Prismic] getLoadImages failed:", err);
+    return [];
+  }
+}
+
+export default async function RootLayout({ children }) {
+  const loadImages = await getLoadImages();
+  
   return (
     <html lang="en">
       <body>
@@ -41,7 +70,9 @@ export default function RootLayout({ children }) {
         <GoogleAnalytics />
         <Cursor />
         <PageTransition />
-        {children}
+        <LoadPageWrapper images={loadImages}>
+          {children}
+        </LoadPageWrapper>
       </body>
     </html>
   );

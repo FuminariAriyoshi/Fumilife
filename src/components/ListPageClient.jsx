@@ -314,7 +314,7 @@ export default function ListPageClient({ videos = [] }) {
       clearTimeout(timeoutId);
       window.removeEventListener("resize", handleResize);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [selectedIndex]);
 
   // 選択中のボタン（サムネイル）にlineをアニメーション

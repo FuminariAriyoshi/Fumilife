@@ -15,6 +15,12 @@ html * {
     cursor: none !important; /* すべての要素で通常のカーソルを非表示 */
 }
 
+/* loadページではカーソルを表示 */
+.load-page,
+.load-page * {
+    cursor: auto !important;
+}
+
 body {
     -ms-overflow-style: none;
     background: #eeeeee;
@@ -316,20 +322,20 @@ body[data-theme="dark"] .GrdLst-container .btn--active {
     font-weight: 400;
 }
 
-/* カスタムカーソル */
+/* カスタムカーソル（fill、difference） */
 .custom-cursor {
     position: fixed;
     width: 10px;
     height: 10px;
-    /* border: 1px solid #111; */
-    fill:  #111;
+    border: none;
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;
     mix-blend-mode: difference;
     transform: translate(-50%, -50%);
+    background: white;
 }
 
 body[data-theme="dark"] .custom-cursor {
-    border-color: white;
+    background: white;
 }
