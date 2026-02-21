@@ -102,6 +102,7 @@ export default function TwoDPageClient({ videos = [] }) {
   const isCameraAnimatingRef = useRef(false); // ズームイン/アウト中は Observer のスクロールを無視
   const isObserverDisabledByZoomRef = useRef(false); // 動画押下後は Observer を起こさない（中心ズレ防止）
   const savedZoomOriginRef = useRef({ x: 0, y: 0 }); // ズーム時のコンテナ内の中心座標（リサイズで再計算用）
+  const observerIgnoreEventsRef = useRef(0); // 新 Observer 作成直後のゴーストイベントを無視する件数（スクロール中クリック対策）
 
   useEffect(() => {
     if (videoList.length === 0) return;
@@ -150,7 +151,6 @@ export default function TwoDPageClient({ videos = [] }) {
       const targetX = centerX - Math.round(sr.left) - Math.round(savedZoomOriginRef.current.x);
       const targetY = centerY - Math.round(sr.top) - Math.round(savedZoomOriginRef.current.y);
 
-      console.log("[GLID] resize while zoomed", { targetX, targetY, targetScale, incrX, incrY });
       gsap.set(container, { x: targetX, y: targetY, scale: targetScale });
     };
 
@@ -162,7 +162,8 @@ export default function TwoDPageClient({ videos = [] }) {
       : null;
     if (contentEl) resizeObserver.observe(contentEl);
 
-    const xTo = gsap.quickTo(container, "x", {
+    /** quickTo を作成するヘルパー（ズーム後に再作成するため関数化） */
+    const createXTo = () => gsap.quickTo(container, "x", {
       duration: 1.5,
       ease: "power4",
       modifiers: {
@@ -177,7 +178,7 @@ export default function TwoDPageClient({ videos = [] }) {
       },
     });
 
-    const yTo = gsap.quickTo(container, "y", {
+    const createYTo = () => gsap.quickTo(container, "y", {
       duration: 1.5,
       ease: "power4",
       modifiers: {
@@ -192,6 +193,9 @@ export default function TwoDPageClient({ videos = [] }) {
       },
     });
 
+    let xTo = createXTo();
+    let yTo = createYTo();
+
     let incrX = 0,
       incrY = 0;
     let savedIncrX = 0,
@@ -204,46 +208,34 @@ export default function TwoDPageClient({ videos = [] }) {
     let observerCreateTimeoutId = null;
 
     const createObserver = () => {
-      console.log("[GLID] createObserver called");
       return Observer.create({
         target: window,
         type: "wheel,touch,pointer",
-        onStart: () => console.log("[GLID] Observer onStart"),
-        onStop: () => console.log("[GLID] Observer onStop", { incrX, incrY }),
         onChangeX: (self) => {
-          if (isObserverDisabledByZoomRef.current) {
-            console.log("[GLID] onChangeX skip (disabledByZoom)");
+          if (observerIgnoreEventsRef.current > 0) {
+            observerIgnoreEventsRef.current--;
             return;
           }
-          if (isCameraAnimatingRef.current) {
-            console.log("[GLID] onChangeX skip (cameraAnimating)");
-            return;
-          }
-          const prev = incrX;
+          if (isObserverDisabledByZoomRef.current) return;
+          if (isCameraAnimatingRef.current) return;
           if (self.event.type === "wheel") incrX -= self.deltaX;
           else incrX += self.deltaX * 2;
-          console.log("[GLID] onChangeX", { eventType: self.event.type, deltaX: self.deltaX, prev, incrX });
           xTo(incrX);
         },
         onChangeY: (self) => {
-          if (isObserverDisabledByZoomRef.current) {
-            console.log("[GLID] onChangeY skip (disabledByZoom)");
+          if (observerIgnoreEventsRef.current > 0) {
+            observerIgnoreEventsRef.current--;
             return;
           }
-          if (isCameraAnimatingRef.current) {
-            console.log("[GLID] onChangeY skip (cameraAnimating)");
-            return;
-          }
-          const prev = incrY;
+          if (isObserverDisabledByZoomRef.current) return;
+          if (isCameraAnimatingRef.current) return;
           if (self.event.type === "wheel") incrY -= self.deltaY;
           else incrY += self.deltaY * 2;
-          console.log("[GLID] onChangeY", { eventType: self.event.type, deltaY: self.deltaY, prev, incrY });
           yTo(incrY);
         },
       });
     };
 
-    console.log("[GLID] initial createObserver");
     observerHolder.current = createObserver();
 
     /** 選択した動画以外をクリックしたら元のカメラに戻す */
@@ -255,108 +247,87 @@ export default function TwoDPageClient({ videos = [] }) {
       const h = dimensionsRef.current.halfY;
       const wrapX = w <= 0 ? 0 : gsap.utils.wrap(-w, 0)(savedIncrX);
       const wrapY = h <= 0 ? 0 : gsap.utils.wrap(-h, 0)(savedIncrY);
-      const targetX = typeof wrapX === "number" ? `${wrapX}px` : wrapX;
-      const targetY = typeof wrapY === "number" ? `${wrapY}px` : wrapY;
+      const numX = typeof wrapX === "number" ? wrapX : (parseFloat(wrapX) || 0);
+      const numY = typeof wrapY === "number" ? wrapY : (parseFloat(wrapY) || 0);
 
-      console.log("[GLID] zoomOut called", { savedIncrX, savedIncrY, targetX, targetY });
+      /**
+       * quickTo 再作成 + Observer 復帰
+       * gsap.to() が quickTo の内部 Tween を kill するため、
+       * ズームアウト完了後に quickTo を新しく作り直す必要がある。
+       */
+      const restoreScrolling = () => {
+        xTo = createXTo();
+        yTo = createYTo();
+        observerHolder.current?.kill();
+        observerHolder.current = null;
+        observerIgnoreEventsRef.current = 0;
+        observerHolder.current = createObserver();
+      };
 
       gsap.to(container, {
         scale: 1,
-        x: targetX,
-        y: targetY,
+        x: numX,
+        y: numY,
         duration: 0.6,
         ease: "power2.inOut",
+        overwrite: "auto",
         onComplete: () => {
           container.style.transformOrigin = "0 0";
-          gsap.set(container, { x: targetX, y: targetY });
-          const numX = parseFloat(targetX) || 0;
-          const numY = parseFloat(targetY) || 0;
           incrX = numX;
           incrY = numY;
+          gsap.set(container, { x: numX, y: numY });
           zoomedMediaRef.current = null;
           isCameraAnimatingRef.current = false;
           isObserverDisabledByZoomRef.current = false;
           updateDimensions();
-          gsap.killTweensOf(container);
-          console.log("[GLID] zoomOut onComplete", { incrX, incrY, halfX: dimensionsRef.current.halfX, halfY: dimensionsRef.current.halfY });
           requestAnimationFrame(() => {
-            console.log("[GLID] zoomOut onComplete rAF", { incrX, incrY });
-            xTo(incrX);
-            yTo(incrY);
-            observerHolder.current?.kill();
-            observerHolder.current = null;
-            console.log("[GLID] zoomOut onComplete rAF: observer killed, scheduling createObserver in 180ms");
-            observerCreateTimeoutId = setTimeout(() => {
-              console.log("[GLID] zoomOut setTimeout: creating new observer", { incrX, incrY });
-              observerHolder.current = createObserver();
-            }, 180);
+            restoreScrolling();
           });
         },
         onInterrupt: () => {
-          const numX = parseFloat(targetX) || 0;
-          const numY = parseFloat(targetY) || 0;
-          incrX = numX;
-          incrY = numY;
+          const curX = parseFloat(gsap.getProperty(container, "x")) || 0;
+          const curY = parseFloat(gsap.getProperty(container, "y")) || 0;
+          const wrappedX = w <= 0 ? curX : (gsap.utils.wrap(-w, 0)(curX) ?? curX);
+          const wrappedY = h <= 0 ? curY : (gsap.utils.wrap(-h, 0)(curY) ?? curY);
+          incrX = typeof wrappedX === "number" ? wrappedX : (parseFloat(wrappedX) || 0);
+          incrY = typeof wrappedY === "number" ? wrappedY : (parseFloat(wrappedY) || 0);
           isCameraAnimatingRef.current = false;
           isObserverDisabledByZoomRef.current = false;
           gsap.killTweensOf(container);
-          console.log("[GLID] zoomOut onInterrupt", { incrX, incrY });
+          gsap.set(container, { x: incrX, y: incrY, scale: 1 });
           requestAnimationFrame(() => {
-            console.log("[GLID] zoomOut onInterrupt rAF", { incrX, incrY });
-            xTo(incrX);
-            yTo(incrY);
-            observerHolder.current?.kill();
-            observerHolder.current = null;
-            observerCreateTimeoutId = setTimeout(() => {
-              console.log("[GLID] zoomOut onInterrupt setTimeout: creating new observer", { incrX, incrY });
-              observerHolder.current = createObserver();
-            }, 180);
+            restoreScrolling();
           });
         },
       });
     };
 
     const handleClick = (e) => {
-      console.log("[GLID] handleClick", { target: e?.target?.className });
-      if (!container?.isConnected || !section?.isConnected) {
-        console.log("[GLID] handleClick early return (no container/section)");
-        return;
-      }
-      if (isCameraAnimatingRef.current) {
-        console.log("[GLID] handleClick early return (cameraAnimating)");
-        return;
-      }
+      if (!container?.isConnected || !section?.isConnected) return;
+      if (isCameraAnimatingRef.current) return;
 
       const media = e.target.closest(".infinite-scroll-container .media");
       const currentScale = gsap.getProperty(container, "scale") ?? 1;
-      console.log("[GLID] handleClick", { currentScale, hasMedia: !!media, zoomedMedia: !!zoomedMediaRef.current });
 
       if (currentScale > 1.5) {
-        console.log("[GLID] handleClick: zoomed state, checking zoomOut");
         if (!media || media !== zoomedMediaRef.current) {
-          console.log("[GLID] handleClick: calling zoomOut");
           zoomOut();
-        } else {
-          console.log("[GLID] handleClick: same media, not zoomOut");
         }
         return;
       }
 
-      if (!media) {
-        console.log("[GLID] handleClick early return (no media)");
-        return;
-      }
+      if (!media) return;
 
-      console.log("[GLID] handleClick: zoom in path");
       isCameraAnimatingRef.current = true;
 
+      // quickTo の内部 Tween を事前に kill しておく（gsap.to との競合防止）
+      if (xTo.tween) xTo.tween.kill();
+      if (yTo.tween) yTo.tween.kill();
       gsap.killTweensOf(container);
       const currentX = parseFloat(gsap.getProperty(container, "x")) || 0;
       const currentY = parseFloat(gsap.getProperty(container, "y")) || 0;
       incrX = currentX;
       incrY = currentY;
-
-      console.log("[GLID] click (zoom in) after kill", { currentX, currentY, incrX, incrY });
 
       const cr = container.getBoundingClientRect();
       const sr = section.getBoundingClientRect();
@@ -381,9 +352,6 @@ export default function TwoDPageClient({ videos = [] }) {
       savedIncrX = currentX;
       savedIncrY = currentY;
 
-      console.log("[GLID] zoom in target", { savedIncrX, savedIncrY, targetX, targetY, targetScale });
-
-      console.log("[GLID] zoom in: killing observer (no observer during zoom)");
       observerHolder.current?.kill();
       observerHolder.current = null;
       isObserverDisabledByZoomRef.current = true;
@@ -395,24 +363,24 @@ export default function TwoDPageClient({ videos = [] }) {
         y: targetY,
         duration: 0.8,
         ease: "power2.out",
+        overwrite: "auto",
         onComplete: () => {
           incrX = targetX;
           incrY = targetY;
           isCameraAnimatingRef.current = false;
-          console.log("[GLID] zoom in onComplete", { incrX, incrY });
           requestAnimationFrame(() => {
-            console.log("[GLID] zoom in onComplete rAF: gsap.set", { targetX, targetY });
             gsap.set(container, { x: targetX, y: targetY });
           });
         },
         onInterrupt: () => {
-          console.log("[GLID] zoom in onInterrupt: recreating observer in 180ms");
           isCameraAnimatingRef.current = false;
           isObserverDisabledByZoomRef.current = false;
           if (observerCreateTimeoutId != null) clearTimeout(observerCreateTimeoutId);
-          observerCreateTimeoutId = setTimeout(() => {
-            observerHolder.current = createObserver();
-          }, 180);
+          // quickTo を再作成してから Observer を復帰
+          xTo = createXTo();
+          yTo = createYTo();
+          observerIgnoreEventsRef.current = 0;
+          observerHolder.current = createObserver();
         },
       });
       zoomedMediaRef.current = media;
@@ -420,8 +388,7 @@ export default function TwoDPageClient({ videos = [] }) {
 
     document.addEventListener("click", handleClick);
 
-      return () => {
-      console.log("[GLID] useEffect cleanup");
+    return () => {
       document.removeEventListener("click", handleClick);
       window.removeEventListener("resize", updateDimensions);
       window.removeEventListener("resize", onResizeWhenZoomed);
