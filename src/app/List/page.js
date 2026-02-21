@@ -47,8 +47,10 @@ async function getVideos() {
           id: doc.id,
           src: videoUrl,
           thumb: thumbUrl,
+          title: doc.data?.title ?? null,
           date: doc.first_publication_date || doc.last_publication_date || null,
-          // 必要に応じて追加フィールド（例: doc.data?.source, doc.data?.camera など）
+          postedOn: doc.data?.posted_on ?? null,
+          shotOn: doc.data?.shot_on ?? null,
         };
       })
       .filter(Boolean);

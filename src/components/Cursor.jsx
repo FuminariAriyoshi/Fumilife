@@ -9,17 +9,18 @@ export default function Cursor() {
         const cursor = cursorRef.current;
         if (!cursor) return;
 
-        // Center the cursor on the mouse position
         gsap.set(cursor, { xPercent: -50, yPercent: -50 });
 
         const onMouseMove = (e) => {
-            gsap.to(cursor, { duration: 0.2, x: e.clientX, y: e.clientY, ease: "power2.out" });
+            if (!cursorRef.current) return;
+            gsap.to(cursorRef.current, { duration: 0.2, x: e.clientX, y: e.clientY, ease: "power2.out" });
         };
 
-        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mousemove', onMouseMove, true);
 
         return () => {
-            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mousemove', onMouseMove, true);
+            gsap.killTweensOf(cursorRef.current);
         };
     }, []);
 

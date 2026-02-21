@@ -85,7 +85,7 @@ interface MovDocumentData {
   thumb: prismic.ImageField<never>;
 
   /**
-   * post field in *mov*
+   * video field in *mov*
    *
    * - **Field Type**: Link
    * - **Placeholder**: *None*
@@ -98,9 +98,37 @@ interface MovDocumentData {
   >;
 
   /**
-   * Link to Media - 動画ファイル（API ID が異なる場合は Prismic のフィールド名に合わせてください）
+   * title field in *mov*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: mov.title
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
    */
-  video?: prismic.LinkToMediaField;
+  title: prismic.KeyTextField;
+
+  /**
+   * posted on field in *mov*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: mov.posted_on
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  posted_on: prismic.KeyTextField;
+
+  /**
+   * shot on field in *mov*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: mov.shot_on
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  shot_on: prismic.KeyTextField;
 }
 
 /**

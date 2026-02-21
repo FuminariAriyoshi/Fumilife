@@ -24,12 +24,33 @@
       "post": {
         "type": "Link",
         "config": {
-          "label": "post",
+          "label": "video",
           "placeholder": "",
           "select": null,
           "allowTargetBlank": true,
           "allowText": false,
           "repeat": true
+        }
+      },
+      "title": {
+        "type": "Text",
+        "config": {
+          "label": "title",
+          "placeholder": ""
+        }
+      },
+      "posted_on": {
+        "type": "Text",
+        "config": {
+          "label": "posted on",
+          "placeholder": ""
+        }
+      },
+      "shot_on": {
+        "type": "Text",
+        "config": {
+          "label": "shot on",
+          "placeholder": ""
         }
       }
     }

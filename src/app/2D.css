@@ -23,7 +23,7 @@ html * {
 
 body {
     -ms-overflow-style: none;
-    background: #eeeeee;
+    background: #ffffff;
     color: #111;
     overflow: hidden;
     font-family: 'Inter', sans-serif;
@@ -44,6 +44,35 @@ body main {
     position: relative;
     z-index: 1;
     min-height: 100vh;
+}
+
+/* 四辺に白グラデーションの固定オーバーレイ（動画より前面） */
+.glid-edge-gradient {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    pointer-events: none;
+    background:
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, transparent 50%),
+        linear-gradient(to top, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+        /* linear-gradient(to right, rgba(255, 255, 255, 0.6) 0%, transparent 0%),
+        linear-gradient(to left, rgba(255, 255, 255, 0.6) 0%, transparent 0%); */
+    background-size: 100% 20%, 100% 20%, 20% 100%, 20% 100%;
+    background-position: top center, bottom center, left center, right center;
+    background-repeat: no-repeat;
+}
+
+body[data-theme="dark"] .glid-edge-gradient {
+    background:
+        linear-gradient(to bottom, rgba(14, 14, 14, 0.6) 0%, transparent 15%),
+        linear-gradient(to top, rgba(14, 14, 14, 0.6) 0%, transparent 15%),
+        linear-gradient(to right, rgba(14, 14, 14, 0.6) 0%, transparent 15%),
+        linear-gradient(to left, rgba(14, 14, 14, 0.6) 0%, transparent 15%);
+    background-size: 100% 20%, 100% 20%, 20% 100%, 20% 100%;
+    background-position: top center, bottom center, left center, right center;
+    background-repeat: no-repeat;
 }
 
 h1,
@@ -104,6 +133,8 @@ h6 {
     aspect-ratio: 1; /* 動画メタデータ取得後は VideoWithThumb の style で上書き */
     user-select: none;
     min-height: 0;
+    pointer-events: auto; /* クリックでズームするため */
+    cursor: pointer;
 }
 
 .infinite-scroll-container .media img,

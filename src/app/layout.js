@@ -15,7 +15,7 @@ export const metadata = {
 };
 
 /**
- * LoadPage用の画像を取得（IDが大きい順）
+ * LoadPage用の画像とメタデータを取得（IDが大きい順）
  */
 async function getLoadImages() {
   try {
@@ -28,20 +28,29 @@ async function getLoadImages() {
         return {
           id: doc.id,
           url: thumbUrl,
+          postedOn: doc.data?.posted_on ?? null,
+          shotOn: doc.data?.shot_on ?? null,
         };
       })
       .filter(Boolean);
     // IDが大きい順にソート
     images.sort((a, b) => b.id.localeCompare(a.id));
-    return images.map((img) => img.url);
+    return {
+      // 各画像に対応するメタデータを含む配列
+      images: images.map((img) => ({
+        url: img.url,
+        postedOn: img.postedOn,
+        shotOn: img.shotOn,
+      })),
+    };
   } catch (err) {
     console.error("[Prismic] getLoadImages failed:", err);
-    return [];
+    return { images: [] };
   }
 }
 
 export default async function RootLayout({ children }) {
-  const loadImages = await getLoadImages();
+  const loadData = await getLoadImages();
   
   return (
     <html lang="en">
@@ -70,7 +79,7 @@ export default async function RootLayout({ children }) {
         <GoogleAnalytics />
         <Cursor />
         <PageTransition />
-        <LoadPageWrapper images={loadImages}>
+        <LoadPageWrapper images={loadData.images}>
           {children}
         </LoadPageWrapper>
       </body>
