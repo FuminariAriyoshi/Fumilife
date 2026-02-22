@@ -446,6 +446,11 @@ export default function TwoDPageClient({ videos = [] }) {
           )}
         </div>
       </section>
+      <div className="centerTextWrapper">
+        <div className="centerText">Who Fumi Is</div>
+        <div className="centerText hidden">What Fumi Values</div>
+        <div className="centerText hidden">How Fumi Thinks</div>
+      </div>
       {/* 四辺に白グラデーションの固定オーバーレイ（動画より前面） */}
       <div className="glid-edge-gradient" aria-hidden />
     </main>

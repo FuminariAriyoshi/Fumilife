@@ -60,17 +60,17 @@ export default function ListPageClient({ videos = [] }) {
 
     // 既存のアニメーションを停止する前に、現在のtranslateYを取得（キャッシュを避けるため）
     const currentTranslateY = parseFloat(gsap.getProperty(sidebar, "y")) || 0;
-    
+
     // 既存のアニメーションを停止してキャッシュをクリア
     gsap.killTweensOf(sidebar);
 
     const viewportHeight = window.innerHeight;
     const viewportCenterY = viewportHeight / 2;
-    
+
     // ボタンの実際のviewport位置を取得（現在のtransform適用後の位置）
     const buttonRect = targetButton.getBoundingClientRect();
     const buttonCenterY = buttonRect.top + buttonRect.height / 2;
-    
+
     // ボタンの中心が画面の中心に来るように、sidebarを移動する距離を計算
     // 現在のボタンの中心位置: buttonCenterY
     // 目標位置: viewportCenterY
@@ -96,22 +96,24 @@ export default function ListPageClient({ videos = [] }) {
     const sidebar = sidebarRef.current;
     if (!line || !targetButton || !sidebar) return;
 
-    const rect = targetButton.getBoundingClientRect();
-    const buttonWidth = rect.width;
-    const buttonHeight = rect.height;
+    // ボタンそのものではなく、中のサムネイル（.medias）を基準にする
+    const mediaEl = targetButton.querySelector(".medias");
+    if (!mediaEl) return;
 
-    const paddingLine = 10;
-    const targetWidth = buttonWidth + paddingLine * 2;
-    const targetHeight = buttonHeight + paddingLine * 2;
+    const mediaRect = mediaEl.getBoundingClientRect();
+    const mediaWidth = mediaRect.width;
+    const mediaHeight = mediaRect.height;
 
-    // sidebarの位置を取得
-    const sidebarRect = sidebar.getBoundingClientRect();
-    const sidebarLeft = sidebarRect.left;
+    const extra = 10; // 左右/上下合計で10px大きくする
+    const targetWidth = mediaWidth + extra;
+    const targetHeight = mediaHeight + extra;
 
-    // lineは画面のy中心に固定（CSSでtransform: translateY(-50%)が適用されているため、topをviewportHeight / 2に設定）
+    // lineは画面のy中心に固定（CSSでtransform: translateY(-50%)が適用されているため、中心がviewportHeight / 2に来る）
     const viewportHeight = window.innerHeight;
-    const targetTop = viewportHeight / 2; // translateY(-50%)により、lineの中心が画面の中心に来る
-    const targetLeft = sidebarLeft - paddingLine; // sidebarの左端に合わせる
+    const targetTop = viewportHeight / 2;
+
+    // サムネイルの左端から (extra / 2) px 外側にずらす（中心を合わせるため）
+    const targetLeft = mediaRect.left - (extra / 2);
 
     // 既存のアニメーションを停止
     if (lineAnimationRef.current) {
@@ -150,7 +152,7 @@ export default function ListPageClient({ videos = [] }) {
 
     // 既存のアニメーションを停止
     gsap.killTweensOf(wrapper);
-    
+
     // DOMが完全にレンダリングされるまで待つ（複数のrequestAnimationFrameで確実に）
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -158,15 +160,15 @@ export default function ListPageClient({ videos = [] }) {
         const mainHeight = mainRect.height;
         const mainTop = mainRect.top;
         const mainCenterY = mainTop + mainHeight / 2;
-        
+
         // 画面の中心位置
         const viewportHeight = window.innerHeight;
         const viewportCenterY = viewportHeight / 2;
-        
+
         // 必要な移動距離を計算（現在の位置から直接計算）
         const currentTranslateY = parseFloat(gsap.getProperty(wrapper, "y")) || 0;
         const targetTranslateY = currentTranslateY + (viewportCenterY - mainCenterY);
-        
+
         // wrapper全体を動かしてmainが画面の中心に来るように（GSAPでアニメーション）
         gsap.to(wrapper, {
           y: targetTranslateY,
@@ -186,11 +188,11 @@ export default function ListPageClient({ videos = [] }) {
     if (!activeButton) return;
     const isFirstRender = isFirstRenderRef.current;
     const animate = !isFirstRender;
-    
+
     // sidebarとlineのアニメーションを同時に実行
     sidebarAnimation(activeButton, animate);
     lineAnimation(activeButton, animate);
-    
+
     isFirstRenderRef.current = false;
   }
 
@@ -220,7 +222,7 @@ export default function ListPageClient({ videos = [] }) {
     function moveToNext() {
       // アニメーション中は何もしない
       if (isAnimatingRef.current) return;
-      
+
       setSelectedIndex((prev) => {
         const next = prev + 1;
         return next >= videoList.length ? 0 : next;
@@ -233,7 +235,7 @@ export default function ListPageClient({ videos = [] }) {
     function moveToPrev() {
       // アニメーション中は何もしない
       if (isAnimatingRef.current) return;
-      
+
       setSelectedIndex((prev) => {
         const prevIndex = prev - 1;
         return prevIndex < 0 ? videoList.length - 1 : prevIndex;
@@ -280,7 +282,7 @@ export default function ListPageClient({ videos = [] }) {
     }
 
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
-    
+
     // 既にメタデータが読み込まれている場合
     if (video.readyState >= 1) {
       handleLoadedMetadata();
@@ -291,35 +293,170 @@ export default function ListPageClient({ videos = [] }) {
     };
   }, [selectedVideo]);
 
-  // ListPageClient が読み込まれたときだけ: list を y:100vh→0、各サムネを y:100→0 でスタガー（初回1回のみ）
+  /**
+   * テキストの初期アニメーション
+   * @param {HTMLElement[]} targets - アニメーション対象のテキスト要素
+   * @param {number} duration - アニメーション時間
+   * @param {string} ease - イージング
+   */
+  const wrapLettersInSpan = (element) => {
+    const text = element.textContent;
+    element.innerHTML = text
+      .split("")
+      .map((char) =>
+        char === " "
+          ? "<span> </span>"
+          : `<span class="letter-wrap"><span class="letter">${char}</span></span>`
+      )
+      .join("");
+  };
+
+  /**
+   * 各ページ・各項目の初期出現アニメーション
+   * @param {HTMLElement[]} targets - アニメーション対象のテキスト要素
+   * @param {number} duration - アニメーション時間
+   * @param {string} ease - イージング
+   */
+  const textInitialAnimation = (targets, duration, ease, delay = 0) => {
+    if (!targets.length) return;
+    // visibility を表示に戻してからアニメーション（clickedTextAnimation で消されている可能性があるため）
+    gsap.set(targets, { visibility: "visible" });
+
+    // タイトルのアニメーション（中の文字を1文字ずつ動かす）
+    const mainTitle = document.querySelector(".list-page__title");
+    if (mainTitle) {
+      // visibility を戻す
+      gsap.set(mainTitle, { visibility: "visible" });
+      wrapLettersInSpan(mainTitle);
+      const letters = mainTitle.querySelectorAll(".letter");
+      if (letters.length) {
+        gsap.fromTo(
+          letters,
+          { y: 150 },
+          {
+            y: 0,
+            duration: 1.2,
+            ease,
+            delay: delay + 0.2,
+            stagger: { each: 0.03, from: "start" },
+          }
+        );
+      } else {
+        // 万が一文字が見つからない場合のフォールバック
+        gsap.fromTo(mainTitle, { y: 150 }, { y: 0, duration: 1.5, ease, delay: delay + 0.2 });
+      }
+    }
+
+    // ラインも同時に表示（幅 0 から 100 に）
+    const lines = document.querySelectorAll(".list-page__item-line");
+    if (lines.length) {
+      gsap.set(lines, { visibility: "visible", width: "0%" });
+      gsap.to(lines, { width: "100%", duration, ease, delay, stagger: { each: 0.05, from: "start" } });
+    }
+
+    // 親要素（mask-wrap）は不動、子要素（mask-inner）を y:100 からスライドアップさせる
+    gsap.fromTo(
+      targets,
+      { y: 100 },
+      {
+        y: 0,
+        duration,
+        ease,
+        delay,
+        stagger: { each: 0.05, from: "start" },
+      }
+    );
+  };
+
+  /**
+   * 動画クリック時のテキストアニメーション（上へ消える）
+   * @param {HTMLElement[]} targets - アニメーション対象のテキスト要素
+   * @param {number} duration - アニメーション時間
+   * @param {string} ease - イージング
+   */
+  const clickedTextAnimation = (targets, duration, ease) => {
+    if (!targets.length) return;
+
+    // タイトルを上に消す（中の要素を動かす）
+    const mainTitle = document.querySelector(".list-page__title");
+    if (mainTitle) {
+      gsap.to(mainTitle, {
+        opacity: 0,
+        yPercent: -100,
+        duration: 0.8,
+        ease,
+        onComplete: () => {
+          gsap.set(mainTitle, { visibility: "hidden" });
+        }
+      });
+    }
+
+    // ラインを 0% に縮小
+    const lines = document.querySelectorAll(".list-page__item-line");
+    if (lines.length) {
+      gsap.to(lines, {
+        width: "0%",
+        duration,
+        ease,
+        stagger: { each: 0.1, from: "edges" },
+        onComplete: () => {
+          gsap.set(lines, { visibility: "hidden" });
+        }
+      });
+    }
+
+    gsap.to(targets, {
+      y: -100,
+      duration,
+      ease,
+      stagger: { each: 0.1, from: "edges" },
+      onComplete: () => {
+        // アニメーション完了後に非表示にする
+        gsap.set(targets, { visibility: "hidden" });
+      },
+    });
+  };
+
+  // ListPageClient が読み込まれたときだけ: list を y:100vh→0、各サムネ/テキストをアニメーション（初回1回のみ）
   useLayoutEffect(() => {
     if (!isLoadComplete || hasSelectedVideo || videoList.length === 0) return;
     if (hasRunInitialListEntranceRef.current) return;
     hasRunInitialListEntranceRef.current = true;
 
-    const id = requestAnimationFrame(() => {
-      const withIds = videoList
-        .map((video, idx) => {
-          const btn = itemRefs.current[idx];
-          const inner = btn?.querySelector(".list-page__thumb, .list-page__thumb-placeholder");
-          return inner ? { el: inner, id: video.id } : null;
-        })
-        .filter(Boolean);
-      if (!withIds.length) return;
-      const sorted = [...withIds].sort((a, b) => {
-        const na = Number(a.id);
-        const nb = Number(b.id);
-        if (!Number.isNaN(na) && !Number.isNaN(nb)) return nb - na;
-        return String(b.id).localeCompare(String(a.id), undefined, { numeric: true });
-      });
-      const inners = sorted.map(({ el }) => el);
-      const listEl = listRef.current;
-      const duration = 2.5;
-      const ease = "expo.out";
+    const itemsData = videoList
+      .map((video, idx) => {
+        const btn = itemRefs.current[idx];
+        const inner = btn?.querySelector(".list-page__thumb, .list-page__thumb-placeholder");
+        // mask-inner をターゲットにする
+        const texts = btn ? Array.from(btn.querySelectorAll(".list-page__mask-inner")) : [];
+        return { inner, texts, id: video.id };
+      })
+      .filter(d => d.inner || d.texts.length);
 
-      const tl = gsap.timeline({
-        onComplete: () => setEntranceDone(true),
-      });
+    if (!itemsData.length) return;
+
+    // id 降順でソート（写真のアニメーション順序に合わせる）
+    const sorted = [...itemsData].sort((a, b) => {
+      const na = Number(a.id);
+      const nb = Number(b.id);
+      if (!Number.isNaN(na) && !Number.isNaN(nb)) return nb - na;
+      return String(b.id).localeCompare(String(a.id), undefined, { numeric: true });
+    });
+
+    const inners = sorted.map(d => d.inner).filter(Boolean);
+    const allTexts = sorted.flatMap(d => d.texts);
+
+    const listEl = listRef.current;
+    const duration = 2.5;
+    const ease = "expo.out";
+
+    const tl = gsap.timeline({
+      delay: 1, // 1秒の間を空ける
+      onComplete: () => setEntranceDone(true),
+    });
+
+    // 写真のアニメーション
+    if (inners.length) {
       tl.fromTo(
         inners,
         { y: 100 },
@@ -329,13 +466,16 @@ export default function ListPageClient({ videos = [] }) {
           ease,
           stagger: { each: 0.05, from: "start" },
         },
-        "<"
+        0 // タイムラインの開始位置
       );
-      if (listEl) {
-        tl.fromTo(listEl, { y: window.innerHeight }, { y: 0, duration, ease }, "<");
-      }
-    });
-    return () => cancelAnimationFrame(id);
+    }
+
+    // テキストのアニメーション（1秒のディレイを指定）
+    textInitialAnimation(allTexts, duration, ease, 1);
+
+    if (listEl) {
+      tl.fromTo(listEl, { y: window.innerHeight }, { y: 0, duration, ease }, 0);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once when load completes; videoList used inside for id order
   }, [isLoadComplete, hasSelectedVideo, videoList.length]);
 
@@ -351,18 +491,18 @@ export default function ListPageClient({ videos = [] }) {
     if (!hasSelectedVideo) return;
 
     const isFirstRender = isFirstMainWrapperRenderRef.current;
-    
+
     const handleResize = () => {
       updateMainWrapperPosition(true);
     };
-    
+
     // 初回は entrance アニメ完了後に合わせて遅延（重ならないように）
     const timeoutId = setTimeout(() => {
       const shouldAnimate = !isFirstRender;
       updateMainWrapperPosition(shouldAnimate);
       isFirstMainWrapperRenderRef.current = false;
     }, isFirstRender ? 900 : 50);
-    
+
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -610,6 +750,9 @@ export default function ListPageClient({ videos = [] }) {
           className={`list-page__sidebar ${!hasSelectedVideo ? "list-page__sidebar--pre-selection" : ""} ${isLoadComplete && !hasSelectedVideo && !entranceDone ? "list-page__sidebar--entrance-pending" : ""}`}
           ref={sidebarRef}
         >
+          <div className="list-page__title-wrap">
+            <div className="list-page__title">Design Your Life Intentionally.</div>
+          </div>
           <ul className="list-page__list" ref={listRef}>
             {videoList.map((video, idx) => (
               <li key={video.id}>
@@ -623,6 +766,11 @@ export default function ListPageClient({ videos = [] }) {
                     if (isAnimatingRef.current) return;
                     if (!hasSelectedVideo) {
                       clickPositionRef.current = { x: e.clientX, y: e.clientY };
+
+                      // 全てのリストアイテムのテキストを上に消すアニメーションを実行
+                      const allInnerTexts = Array.from(document.querySelectorAll(".list-page__mask-inner"));
+                      clickedTextAnimation(allInnerTexts, 0.5, "power2.inOut");
+
                       setSelectedIndex(idx);
                       setHasSelectedVideo(true);
                     } else {
@@ -631,8 +779,12 @@ export default function ListPageClient({ videos = [] }) {
                   }}
                   aria-pressed={idx === selectedIndex}
                 >
-                  <span>{getDisplayNumber(video)}</span>
-                  <span className="list-page__item-title">{video.title ?? ""}</span>
+                  <span className="list-page__mask-wrap">
+                    <span className="list-page__mask-inner">{getDisplayNumber(video)}</span>
+                  </span>
+                  <span className="list-page__mask-wrap list-page__mask-wrap--title">
+                    <span className="list-page__item-title list-page__mask-inner">{video.title ?? ""}</span>
+                  </span>
                   <span className="medias">
                     {video.thumb ? (
                       <img src={video.thumb} alt="" className="media list-page__thumb" />
@@ -640,6 +792,7 @@ export default function ListPageClient({ videos = [] }) {
                       <div className="list-page__thumb-placeholder" />
                     )}
                   </span>
+                  <div className="list-page__item-line" />
                 </button>
               </li>
             ))}

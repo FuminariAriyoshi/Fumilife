@@ -21,18 +21,18 @@ export default function LoadPage({ images = [], onComplete }) {
   const infoRef = useRef(null);
   const startTimeRef = useRef(Date.now());
   const timelineRef = useRef(null);
-  
+
   // アニメーションタイミング管理（一括管理）
   // 画像切り替えテンポ（秒）を変更すると、他のdurationも自動計算される
   const durationTime = 2.0; // 画像切り替えの間隔（メインのテンポ）
-  
+
   // durationTimeから計算される比率（画像切り替えテンポに応じて自動調整）
   const fadeInRatio = 0.8; // フェードインの比率（80%）
   const fadeOutRatio = 0.8; // フェードアウトの比率（80%）
   const textFadeRatio = 0.25; // テキストフェードの比率（25%）
   const infoFadeOutRatio = 0.2; // メタデータフェードアウトの比率（20%）
   const infoFadeInRatio = 0.3; // メタデータフェードインの比率（30%）
-  
+
   // 計算されたduration
   const fadeInDuration = durationTime * fadeInRatio;
   const fadeOutDuration = durationTime * fadeOutRatio;
@@ -187,7 +187,7 @@ export default function LoadPage({ images = [], onComplete }) {
     const container = containerRef.current;
     if (!container) return;
 
-    const minDisplayTime = 3000; // 最低3秒
+    const minDisplayTime = 2000; // 最低2秒
     const checkAndHide = () => {
       const elapsed = Date.now() - startTimeRef.current;
       const remaining = Math.max(0, minDisplayTime - elapsed);
@@ -199,6 +199,7 @@ export default function LoadPage({ images = [], onComplete }) {
         // barba の once 相当: ロード画面用 leave
         runLoadPageLeave(container).then(() => {
           setIsVisible(false);
+          // 退場アニメーション終了後に完了を通知
           if (onComplete) onComplete();
         });
       }, remaining);

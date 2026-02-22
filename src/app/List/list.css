@@ -171,6 +171,38 @@ body[data-theme="dark"] .list-page__video-wrapper {
     font-weight: 200;
 }
 
+.list-page__title-wrap {
+    overflow: hidden;
+    position: relative;
+    padding: 64px 32px 0 32px;
+    margin-bottom: 20px;
+}
+
+.list-page__title {
+    position: relative;
+    font-family: 'Snell Roundhand', cursive;
+    font-size: 64px;
+    font-weight: 700;
+    color: #141414;
+    z-index: 10;
+    margin-bottom: 5px;
+}
+
+.list-page__title .letter-wrap {
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: 1.1;
+}
+
+.list-page__title .letter {
+    display: inline-block;
+    will-change: transform;
+}
+
+body[data-theme="dark"] .list-page__title {
+    color: #f5f5f5;
+}
+
 .list-page__sidebar {
     position: absolute;
     left: 0;
@@ -185,13 +217,15 @@ body[data-theme="dark"] .list-page__video-wrapper {
     position: absolute;
     left: 0;
     right: 0;
-    top: 20%;
+    top: 0;
     width: 100vw;
+    height: 100vh;
+    padding-top: 5vh;
 }
 
 /* 初期画面でもリストをスクロール可能にする */
 .list-page__sidebar--pre-selection .list-page__list {
-    max-height: 70vh;
+    max-height: 80vh;
     overflow-y: scroll;
 }
 
@@ -199,6 +233,7 @@ body[data-theme="dark"] .list-page__video-wrapper {
 .list-page__sidebar--entrance-pending .list-page__list {
     transform: translateY(100vh);
 }
+
 .list-page__sidebar--entrance-pending .list-page__thumb,
 .list-page__sidebar--entrance-pending .list-page__thumb-placeholder {
     transform: translateY(100px);
@@ -245,7 +280,19 @@ body[data-theme="dark"] .list-page__video-wrapper {
     overflow: hidden;
     transition: background 0.2s ease;
     border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    position: relative;
+    /* ラインの基準 */
+}
+
+.list-page__item-line {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.3);
+    pointer-events: none;
 }
 
 /* 以前の sidebar 幅（74px）と同じサムネサイズ */
@@ -319,6 +366,10 @@ body[data-theme="dark"] .list-page__item {
     border: none;
 }
 
+body[data-theme="dark"] .list-page__item-line {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 body[data-theme="dark"] .list-page__item:hover {
     background: rgba(255, 255, 255, 0);
 }
@@ -388,7 +439,6 @@ body[data-theme="dark"] .list-page_line {
 .list-page__list ul li {
     flex: 1 1 45px;
     align-items: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
     width: 100%;
     padding: 0 25px;
     display: flex;
@@ -397,8 +447,26 @@ body[data-theme="dark"] .list-page_line {
     overflow: hidden;
 }
 
-/* 番号用の span（button 内の最初の span） */
-.list-page__item > span:first-of-type {
+/* Text Reveal 用のマスク構造 */
+.list-page__mask-wrap {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    padding-right: 5px;
+}
+
+.list-page__mask-wrap--title {
+    flex: 1;
+    min-width: 0;
+}
+
+.list-page__mask-inner {
+    display: inline-block;
+    will-change: transform;
+}
+
+/* 番号用の span（button 内の最初の wrap 内の inner） */
+.list-page__mask-inner:not(.list-page__item-title) {
     font-family: 'Roboto', sans-serif;
     letter-spacing: -0.05em;
     font-size: 24px;
@@ -413,8 +481,8 @@ body[data-theme="dark"] .list-page_line {
     font-size: 24px;
     letter-spacing: -0.05em;
     color: #0f0f0f;
-    flex: 1;
-    min-width: 0;
+    width: 100%;
+    /* wrap に合わせて幅いっぱい使う */
     margin: 0 8px;
     overflow: hidden;
     text-overflow: ellipsis;

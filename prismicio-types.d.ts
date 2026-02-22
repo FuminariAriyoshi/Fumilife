@@ -129,6 +129,17 @@ interface MovDocumentData {
    * - **Documentation**: https://prismic.io/docs/fields/text
    */
   shot_on: prismic.KeyTextField;
+
+  /**
+   * link field in *mov*
+   *
+   * - **Field Type**: Link
+   * - **Placeholder**: *None*
+   * - **API ID Path**: mov.link
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/link
+   */
+  link: prismic.LinkField<string, string, unknown, prismic.FieldState, never>;
 }
 
 /**

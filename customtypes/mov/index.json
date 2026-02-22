@@ -52,6 +52,17 @@
           "label": "shot on",
           "placeholder": ""
         }
+      },
+      "link": {
+        "type": "Link",
+        "config": {
+          "label": "link",
+          "placeholder": "",
+          "select": null,
+          "allowTargetBlank": true,
+          "allowText": true,
+          "repeat": false
+        }
       }
     }
   }
