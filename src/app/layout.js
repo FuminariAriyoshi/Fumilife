@@ -8,6 +8,7 @@ import PageTransition from "../components/PageTransition";
 import GrdLstContainer from "../components/GrdLstContainer";
 import LoadPageWrapper from "../components/LoadPageWrapper";
 import { createClient } from "@/prismicio";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   title: "FUMILIFE",
@@ -75,6 +76,7 @@ export default async function RootLayout({ children }) {
         <LoadPageWrapper images={loadData.images}>
           {children}
         </LoadPageWrapper>
+        <SpeedInsights />
       </body>
     </html>
   );
