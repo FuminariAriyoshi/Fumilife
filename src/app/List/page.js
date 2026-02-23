@@ -51,6 +51,7 @@ async function getVideos() {
           date: doc.first_publication_date || doc.last_publication_date || null,
           postedOn: doc.data?.posted_on ?? null,
           shotOn: doc.data?.shot_on ?? null,
+          link: doc.data?.link?.url ?? null,
         };
       })
       .filter(Boolean);

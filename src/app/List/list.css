@@ -281,6 +281,8 @@ body[data-theme="dark"] .list-page__title {
     transition: background 0.2s ease;
     border: none;
     position: relative;
+    text-decoration: none;
+    color: inherit;
     /* ラインの基準 */
 }
 
