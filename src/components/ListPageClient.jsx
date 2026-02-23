@@ -5,7 +5,7 @@ import Link from "next/link";
 import { LoadContext } from "@/components/LoadPageWrapper";
 import gsap from "gsap";
 import { Observer } from "gsap/Observer";
-import "../app/list/list.css";
+import "@/app/list/list.css";
 
 /**
  * Listページ: 右側にアイテムリスト、中央に選択中の動画を表示（Figmaデザイン準拠）。
