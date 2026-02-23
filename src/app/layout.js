@@ -51,7 +51,7 @@ async function getLoadImages() {
 
 export default async function RootLayout({ children }) {
   const loadData = await getLoadImages();
-  
+
   return (
     <html lang="en">
       <body>
@@ -68,14 +68,7 @@ export default async function RootLayout({ children }) {
             <GrdLstContainer />
           </div>
 
-          <div className="corner-element sns">
-          <ul className="sns-list">
-            <li><a href="https://www.instagram.com/fumilife" target="_blank" rel="noopener noreferrer">Instagram</a></li>
-            <li><a href="https://www.youtube.com/@fumilife" target="_blank" rel="noopener noreferrer">Youtube</a></li>
-            <li><a href="#" target="_blank" rel="noopener noreferrer">X</a></li>
-          </ul>
-        </div>  
-      </section>
+        </section>
         <GoogleAnalytics />
         <Cursor />
         <PageTransition />

@@ -103,6 +103,16 @@ export default function TwoDPageClient({ videos = [] }) {
   const isObserverDisabledByZoomRef = useRef(false); // 動画押下後は Observer を起こさない（中心ズレ防止）
   const savedZoomOriginRef = useRef({ x: 0, y: 0 }); // ズーム時のコンテナ内の中心座標（リサイズで再計算用）
   const observerIgnoreEventsRef = useRef(0); // 新 Observer 作成直後のゴーストイベントを無視する件数（スクロール中クリック対策）
+  const [textIndex, setTextIndex] = useState(0);
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  // 文字の切り替えアニメーション（4秒ごとに更新）
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTextIndex((prev) => (prev + 1) % 3);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (videoList.length === 0) return;
@@ -241,6 +251,7 @@ export default function TwoDPageClient({ videos = [] }) {
     /** 選択した動画以外をクリックしたら元のカメラに戻す */
     const zoomOut = () => {
       if (isCameraAnimatingRef.current) return;
+      setIsZoomed(false);
       isCameraAnimatingRef.current = true;
 
       const w = dimensionsRef.current.halfX;
@@ -318,6 +329,7 @@ export default function TwoDPageClient({ videos = [] }) {
 
       if (!media) return;
 
+      setIsZoomed(true);
       isCameraAnimatingRef.current = true;
 
       // quickTo の内部 Tween を事前に kill しておく（gsap.to との競合防止）
@@ -446,10 +458,15 @@ export default function TwoDPageClient({ videos = [] }) {
           )}
         </div>
       </section>
-      <div className="centerTextWrapper">
-        <div className="centerText">Who Fumi Is</div>
-        <div className="centerText hidden">What Fumi Values</div>
-        <div className="centerText hidden">How Fumi Thinks</div>
+      <div className={`centerTextWrapper ${isZoomed ? "centerTextWrapper--hidden" : ""}`}>
+        {["Who Fumi Is", "What Fumi Values", "How Fumi Thinks"].map((text, i) => (
+          <div
+            key={text}
+            className={`centerText ${textIndex === i ? "active" : ""}`}
+          >
+            {text}
+          </div>
+        ))}
       </div>
       {/* 四辺に白グラデーションの固定オーバーレイ（動画より前面） */}
       <div className="glid-edge-gradient" aria-hidden />

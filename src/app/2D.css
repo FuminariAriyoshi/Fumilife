@@ -378,27 +378,44 @@ body[data-theme="dark"] .custom-cursor {
 }
 
 
+.centerTextWrapper {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+}
+
+.centerTextWrapper--hidden {
+    opacity: 0;
+}
+
 .centerText {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-family: "Snell Roundhand", cursive;
     font-weight: 400;
-    color: black;
-    mix-blend-mode: difference;
+    color: #111;
+    mix-blend-mode: normal;
     letter-spacing: 0.05em;
     cursor: pointer;
     outline: none;
-    opacity: 0.8;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    white-space: nowrap;
+    transition: opacity 1s ease, visibility 1s ease;
 }
 
 body[data-theme="dark"] .centerText {
     color: white;
+    mix-blend-mode: difference;
 }
 
-.centerText.hidden {
-    opacity: 0;
-    display: none;
+.centerText.active {
+    opacity: 0.8;
+    visibility: visible;
 }

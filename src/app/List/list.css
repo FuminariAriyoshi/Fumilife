@@ -489,6 +489,7 @@ body[data-theme="dark"] .list-page_line {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: center;
 }
 
 body[data-theme="dark"] .list-page__item-title {

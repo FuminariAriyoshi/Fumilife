@@ -1,0 +1,212 @@
+/* ===== About Page Styles (Aristide Benoist Inspired) ===== */
+
+.about-page {
+    --text-color: rgba(0, 0, 0, 0.8);
+    /* LIGHT: Black with 0.8 opacity */
+    --accent-color: rgba(0, 0, 0, 0.4);
+
+    background-color: transparent;
+    color: var(--text-color);
+    min-height: 100vh;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    /* text-transform: uppercase; 削除：スクリプト体に対応 */
+    overflow: hidden;
+    /* overflow-x/y 両方を隠す */
+    position: relative;
+    z-index: 1;
+}
+
+body[data-theme="dark"] .about-page {
+    --text-color: #BAC4B8;
+    /* DARK: Original pale greenish-gray */
+    --accent-color: #888;
+}
+
+.about-container {
+    width: 100%;
+    margin: 0;
+    padding: 120px 40px 80px;
+    /* padding-bottom を 80px に */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* 上下端に離す */
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.about-top-group {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+}
+
+.about-main-wrapper {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 40px;
+    width: 100%;
+}
+
+.about-grid {
+    grid-column: 1 / span 6;
+}
+
+.about-value {
+    grid-column: 7 / span 3;
+}
+
+/* Typography Helpers */
+.text-small {
+    font-size: 11px;
+    line-height: 1.6;
+    letter-spacing: 0.1em;
+    font-weight: 400;
+}
+
+.text-medium {
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+}
+
+.text-huge {
+    font-size: 10vw;
+    /* ビューポート幅に基づいたダイナミックなサイズ */
+    font-family: "Snell Roundhand", cursive;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    margin: 0;
+    text-transform: none;
+    /* スクリプト体のため大文字強制を解除 */
+}
+
+/* Layout Grid */
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 40px;
+}
+
+.about-bio {
+    grid-column: 1 / span 5;
+}
+
+.about-footer {
+    /* margin-top: 100px; 削除：space-betweenで制御 */
+}
+
+.about-lists {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.about-lists-right-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 120px;
+}
+
+/* List Styles */
+.about-list-title {
+    font-size: 11px;
+    color: var(--accent-color);
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(186, 196, 184, 0.2);
+    padding-bottom: 8px;
+}
+
+.about-list-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.about-list-item {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+}
+
+.about-list-items a {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+}
+
+.about-list-items a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--text-color);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.about-list-items a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* Animations */
+.reveal-text {
+    overflow: hidden;
+    display: block;
+}
+
+.reveal-text span {
+    display: block;
+    transform: translateY(100%);
+}
+
+@media (max-width: 1024px) {
+    .about-top-group {
+        gap: 5vh;
+        margin-top: 5vh;
+    }
+
+    .about-hero {
+        display: flex;
+        align-items: center;
+        min-height: auto;
+    }
+
+    .about-grid,
+    .about-value {
+        grid-column: 1 / span 12;
+    }
+
+    .about-main-wrapper {
+        gap: 60px;
+    }
+
+    .about-container {
+        height: auto;
+        min-height: 100vh;
+        padding-top: 5vh;
+        /* Gapと同じ値にしてタイトルを中央に配置 */
+    }
+}
+
+@media (max-width: 768px) {
+    .about-lists-right-wrapper {
+        display: none;
+        /* スマホでは Selected Projects と Capabilities を非表示 */
+    }
+
+    .about-lists {
+        justify-content: flex-start;
+        /* リストが非表示になっても Socials の位置を左側に固定 */
+    }
+}
