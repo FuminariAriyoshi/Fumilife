@@ -15,6 +15,15 @@
     /* overflow-x/y 両方を隠す */
     position: relative;
     z-index: 1;
+    /* Prevent FOUC (Flash of Unstyled Content) and CLS from animations */
+}
+
+.about-hero-title,
+.about-grid>div,
+.about-value,
+.about-footer {
+    opacity: 0;
+    visibility: hidden;
 }
 
 body[data-theme="dark"] .about-page {
@@ -92,10 +101,6 @@ body[data-theme="dark"] .about-page {
 
 .about-bio {
     grid-column: 1 / span 5;
-}
-
-.about-footer {
-    /* margin-top: 100px; 削除：space-betweenで制御 */
 }
 
 .about-lists {

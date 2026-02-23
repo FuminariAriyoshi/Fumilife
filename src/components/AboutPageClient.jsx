@@ -13,26 +13,46 @@ export default function AboutPageClient() {
 
         const ctx = gsap.context(() => {
             // Reveal huge title
-            gsap.from(".about-hero-title", {
-                y: 200,
-                opacity: 0,
-                duration: 1.5,
-                ease: "expo.out",
-                delay: 0.5,
-            });
+            gsap.fromTo(".about-hero-title",
+                { y: 200, autoAlpha: 0 },
+                {
+                    y: 0,
+                    autoAlpha: 1,
+                    duration: 1.5,
+                    ease: "expo.out",
+                    delay: 0.5,
+                }
+            );
 
             // Reveal grid items
-            gsap.from(".about-grid > div", {
-                y: 60,
-                opacity: 0,
-                duration: 1.2,
-                stagger: 0.2,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: ".about-grid",
-                    start: "top 85%",
-                },
-            });
+            gsap.fromTo(".about-grid > div, .about-value",
+                { y: 60, autoAlpha: 0 },
+                {
+                    y: 0,
+                    autoAlpha: 1,
+                    duration: 1.2,
+                    stagger: 0.2,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: ".about-grid",
+                        start: "top 85%",
+                    },
+                }
+            );
+
+            // Reveal footer
+            gsap.fromTo(".about-footer",
+                { autoAlpha: 0 },
+                {
+                    autoAlpha: 1,
+                    duration: 1,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: ".about-footer",
+                        start: "top 90%",
+                    },
+                }
+            );
 
         }, containerRef);
 

@@ -28,7 +28,27 @@ body {
   font-weight: 500;
   overflow-x: hidden;
   overflow-y: auto;
-  /* Enable vertical scrolling */
+  /* Prevent layout shift from scrollbar appearance */
+  scrollbar-gutter: stable;
+}
+
+/* Base styles to prevent CLS */
+img,
+video {
+  max-width: 100%;
+  height: auto;
+  font-style: italic;
+  vertical-align: middle;
+  shape-margin: 0.75rem;
+}
+
+/* Ensure placeholder sizes for common containers */
+.list-page__thumb,
+.list-page__video-wrapper {
+  aspect-ratio: 16 / 9;
+  /* Default to landscape */
+  background: #111;
+  /* Visible placeholder */
 }
 
 
