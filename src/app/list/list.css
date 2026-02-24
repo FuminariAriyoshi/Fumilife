@@ -180,10 +180,19 @@ body[data-theme="dark"] .list-page__video-wrapper {
 }
 
 .list-page__title-wrap {
-    overflow: hidden;
+    overflow: visible;
+    /* タイトルの装飾が切れないようにスマホ等で調整しやすく */
     position: relative;
     padding: 64px 32px 0 32px;
     margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .list-page__title-wrap {
+        padding-top: 20px;
+        /* スマホではパディングを詰める */
+        overflow: visible;
+    }
 }
 
 .list-page__title {
@@ -206,6 +215,9 @@ body[data-theme="dark"] .list-page__video-wrapper {
 @media (max-width: 768px) {
     .list-page__title {
         font-size: 36px;
+        margin: 10px 0;
+        overflow-x: visible;
+        overflow-y: hidden;
     }
 }
 
