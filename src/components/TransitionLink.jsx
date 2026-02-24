@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import gsap from "gsap";
+import Link from "next/link";
 
 export const animatePageOut = (href, router) => {
     const overlay = document.getElementById("transition-overlay");
@@ -31,8 +32,8 @@ export default function TransitionLink({ href, children, ...props }) {
     };
 
     return (
-        <a href={href} onClick={handleClick} {...props}>
+        <Link href={href} onClick={handleClick} {...props}>
             {children}
-        </a>
+        </Link>
     );
 }

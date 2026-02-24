@@ -11,36 +11,69 @@ export default function AboutPageClient() {
     useEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
 
+        /**
+         * テキストを単語ごとに span でラップする
+         */
+        const wrapWordsInSpan = (element) => {
+            const text = element.textContent.trim();
+            element.innerHTML = text
+                .split(/\s+/) // 複数の空白にも対応
+                .map(word => `<span class="word" style="display:inline-block; overflow:hidden; vertical-align:bottom;"><span class="word-inner" style="display:inline-block;">${word}</span></span>`)
+                .join(' ');
+        };
+
         const ctx = gsap.context(() => {
             // Reveal huge title
             gsap.fromTo(".about-hero-title",
-                { y: 200, autoAlpha: 0 },
+                { y: "110%", autoAlpha: 1 },
                 {
-                    y: 0,
+                    y: "0%",
                     autoAlpha: 1,
-                    duration: 1.5,
+                    duration: 2,
                     ease: "expo.out",
                     delay: 0.5,
                 }
             );
 
-            // Reveal grid items
-            gsap.fromTo(".about-grid > div, .about-value",
-                { y: 60, autoAlpha: 0 },
-                {
-                    y: 0,
-                    autoAlpha: 1,
-                    duration: 1.2,
-                    stagger: 0.2,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: ".about-grid",
-                        start: "top 85%",
-                    },
-                }
-            );
+            // Target elements for word reveal
+            const introParagraph = document.querySelector(".about-bio p");
+            const valueItems = document.querySelectorAll(".about-value li");
 
-            // Reveal footer
+            if (introParagraph) wrapWordsInSpan(introParagraph);
+            valueItems.forEach(item => wrapWordsInSpan(item));
+
+            const labels = document.querySelectorAll(".about-list-title");
+            const allWords = document.querySelectorAll(".about-bio p .word-inner, .about-value li .word-inner");
+            const parents = document.querySelectorAll(".about-bio, .about-value");
+
+            // Timeline for coordinated reveal (Page Load Initial Animation)
+            const tl = gsap.timeline({
+                // delay: 1.2, // タイトルのリビール開始後、少し遅れて開始
+            });
+
+            // Make parents visible immediately when timeline starts
+            tl.set(parents, { autoAlpha: 1 })
+                .fromTo(labels,
+                    { autoAlpha: 0, yPercent: 100 },
+                    {
+                        autoAlpha: 1,
+                        yPercent: 0,
+                        duration: 0.8,
+                        stagger: 0.2,
+                        ease: "power2.out",
+                    })
+                .fromTo(allWords,
+                    { yPercent: 100 },
+                    {
+                        yPercent: 0,
+                        duration: 1.2,
+                        stagger: 0.025, // staggerを大きくした (0.01 -> 0.025)
+                        ease: "expo.out",
+                    },
+                    "+=0.4" // ラベル表示の途中から開始
+                );
+
+            // Reveal footer (Remains scroll triggered or adjust as needed)
             gsap.fromTo(".about-footer",
                 { autoAlpha: 0 },
                 {
@@ -49,7 +82,7 @@ export default function AboutPageClient() {
                     ease: "power2.out",
                     scrollTrigger: {
                         trigger: ".about-footer",
-                        start: "top 90%",
+                        start: "top 95%",
                     },
                 }
             );
@@ -63,7 +96,7 @@ export default function AboutPageClient() {
         <div className="about-page" ref={containerRef}>
             <div className="about-container">
                 <div className="about-top-group">
-                    <section className="about-hero">
+                    <section className="about-hero" style={{ overflow: 'hidden' }}>
                         <h1 className="about-hero-title text-huge">
                             FUMILIFE
                         </h1>

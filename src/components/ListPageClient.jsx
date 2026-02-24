@@ -748,7 +748,7 @@ export default function ListPageClient({ videos = [] }) {
 
         {/* 右側: アイテムリスト（番号 + media 写真） */}
         <div
-          className={`list-page__sidebar ${!hasSelectedVideo ? "list-page__sidebar--pre-selection" : ""} ${isLoadComplete && !hasSelectedVideo && !entranceDone ? "list-page__sidebar--entrance-pending" : ""}`}
+          className={`list-page__sidebar ${!hasSelectedVideo ? "list-page__sidebar--pre-selection" : ""} ${!hasSelectedVideo && !entranceDone ? "list-page__sidebar--entrance-pending" : ""}`}
           ref={sidebarRef}
         >
           <div className="list-page__title-wrap">

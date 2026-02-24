@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { runLeave } from "@/lib/barbaTransition";
+import Link from "next/link";
 
 /**
  * barba.js 風の leave → 遷移。leave 完了後に router.push する。
@@ -22,8 +23,8 @@ export default function GrdLstTransitionLink({ href, children, ...props }) {
   };
 
   return (
-    <a href={href} onClick={handleClick} {...props}>
+    <Link href={href} onClick={handleClick} {...props}>
       {children}
-    </a>
+    </Link>
   );
 }
