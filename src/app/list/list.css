@@ -59,12 +59,20 @@
     gap: 0;
     /* 横方向の基準幅を固定して中央ずれを防ぐ */
     width: 568px;
-    max-width: calc(100vw - 220px);
+    max-width: calc(100vw - 48px);
+    /* モバイルでも安定するようマージンを調整 */
     /* 高さをvideo-wrapper--portraitに合わせる */
     height: max(calc(70vh), calc(568px * 16 / 9));
     max-height: 70vh;
     position: relative;
     align-items: center;
+}
+
+@media (max-width: 768px) {
+    .list-page__main {
+        width: 100%;
+        max-width: calc(100vw - 32px);
+    }
 }
 
 /* 前後の動画 */
@@ -186,6 +194,25 @@ body[data-theme="dark"] .list-page__video-wrapper {
     color: #141414;
     z-index: 10;
     margin-bottom: 5px;
+    transition: font-size 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+    .list-page__title {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 768px) {
+    .list-page__title {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .list-page__title {
+        font-size: 28px;
+    }
 }
 
 .list-page__title .letter-wrap {
@@ -305,6 +332,21 @@ body[data-theme="dark"] .list-page__title {
     flex-shrink: 0;
     overflow: hidden;
     aspect-ratio: 9 / 16;
+    transition: width 0.3s ease, min-width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .list-page__item .medias {
+        width: 60px;
+        min-width: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .list-page__item .medias {
+        width: 50px;
+        min-width: 50px;
+    }
 }
 
 .list-page__item .medias .media,
@@ -392,44 +434,7 @@ body[data-theme="dark"] .list-page_line {
     opacity: 0.8;
 }
 
-@media (max-width: 768px) {
-    .list-page__container {
-        flex-direction: column;
-        padding: 100px 20px 20px;
-        gap: 30px;
-    }
-
-    .list-page__main {
-        width: 100%;
-    }
-
-    .list-page__main {
-        width: 100%;
-    }
-
-    .list-page__main {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .list-page__sidebar {
-        width: 100%;
-    }
-
-    .list-page__list {
-        flex-direction: row;
-        overflow-x: auto;
-        overflow-y: hidden;
-        max-height: none;
-        gap: 12px;
-        padding-bottom: 8px;
-    }
-
-    .list-page__item {
-        width: 80px;
-        flex-shrink: 0;
-    }
-}
+/* モバイルでも laptop のレイアウト（縦リスト）を維持するため、以前の media query による大幅な変更を削除 */
 
 .list-page__list ul {
     width: 100%;
@@ -474,6 +479,19 @@ body[data-theme="dark"] .list-page_line {
     font-size: 24px;
     font-weight: 500;
     color: #0f0f0f;
+    transition: font-size 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .list-page__mask-inner:not(.list-page__item-title) {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .list-page__mask-inner:not(.list-page__item-title) {
+        font-size: 14px;
+    }
 }
 
 /* CMS の title（Inter bold 24px） */
@@ -490,6 +508,19 @@ body[data-theme="dark"] .list-page_line {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align: center;
+    transition: font-size 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .list-page__item-title {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .list-page__item-title {
+        font-size: 14px;
+    }
 }
 
 body[data-theme="dark"] .list-page__item-title {
