@@ -213,4 +213,8 @@ body[data-theme="dark"] .about-page {
         justify-content: flex-start;
         /* リストが非表示になっても Socials の位置を左側に固定 */
     }
+
+    .external-link-arrow {
+        display: none;
+    }
 }

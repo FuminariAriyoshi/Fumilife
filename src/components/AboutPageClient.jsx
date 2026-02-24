@@ -132,13 +132,13 @@ export default function AboutPageClient() {
                             <h2 className="about-list-title">Socials</h2>
                             <ul className="about-list-items">
                                 <li className="about-list-item">
-                                    <a href="https://www.instagram.com/fumilife" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+                                    <a href="https://www.instagram.com/fumilife" target="_blank" rel="noopener noreferrer">Instagram <span className="external-link-arrow">↗</span></a>
                                 </li>
                                 <li className="about-list-item">
-                                    <a href="https://www.youtube.com/@fumilife" target="_blank" rel="noopener noreferrer">Youtube ↗</a>
+                                    <a href="https://www.youtube.com/@fumilife" target="_blank" rel="noopener noreferrer">Youtube <span className="external-link-arrow">↗</span></a>
                                 </li>
                                 <li className="about-list-item">
-                                    <a href="#" target="_blank" rel="noopener noreferrer">X ↗</a>
+                                    <a href="#" target="_blank" rel="noopener noreferrer">X <span className="external-link-arrow">↗</span></a>
                                 </li>
                             </ul>
                         </div>
