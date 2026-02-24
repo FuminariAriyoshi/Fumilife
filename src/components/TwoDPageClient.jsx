@@ -264,16 +264,23 @@ export default function TwoDPageClient({ videos = [] }) {
       /**
        * quickTo 再作成 + Observer 復帰
        * gsap.to() が quickTo の内部 Tween を kill するため、
-       * ズームアウト完了後に quickTo を新しく作り直す必要がある。
+       * ズームアウト完了後（およびズームイン開始前）に quickTo を作り直す / 管理を整理する。
        */
       const restoreScrolling = () => {
+        // quickTo を確実に再生成
         xTo = createXTo();
         yTo = createYTo();
-        observerHolder.current?.kill();
-        observerHolder.current = null;
+
+        // Observer が生きていれば一度殺して再作成（モバイルでのイベントスタック防止）
+        if (observerHolder.current) {
+          observerHolder.current.kill();
+          observerHolder.current = null;
+        }
         observerIgnoreEventsRef.current = 0;
         observerHolder.current = createObserver();
       };
+
+      gsap.killTweensOf(container);
 
       gsap.to(container, {
         scale: 1,
@@ -281,7 +288,7 @@ export default function TwoDPageClient({ videos = [] }) {
         y: numY,
         duration: 0.6,
         ease: "power2.inOut",
-        overwrite: "auto",
+        overwrite: true,
         onComplete: () => {
           container.style.transformOrigin = "0 0";
           incrX = numX;
@@ -291,6 +298,8 @@ export default function TwoDPageClient({ videos = [] }) {
           isCameraAnimatingRef.current = false;
           isObserverDisabledByZoomRef.current = false;
           updateDimensions();
+
+          // カメラを引いた直後に quickTo を再生成してスクロールを有効化
           requestAnimationFrame(() => {
             restoreScrolling();
           });
@@ -375,7 +384,7 @@ export default function TwoDPageClient({ videos = [] }) {
         y: targetY,
         duration: 0.8,
         ease: "power2.out",
-        overwrite: "auto",
+        overwrite: true,
         onComplete: () => {
           incrX = targetX;
           incrY = targetY;

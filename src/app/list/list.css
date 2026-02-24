@@ -479,7 +479,11 @@ body[data-theme="dark"] .list-page_line {
     font-size: 24px;
     font-weight: 500;
     color: #0f0f0f;
-    transition: font-size 0.3s ease;
+    transition: font-size 0.3s ease, color 0.3s ease;
+}
+
+body[data-theme="dark"] .list-page__mask-inner:not(.list-page__item-title) {
+    color: #eee;
 }
 
 @media (max-width: 768px) {
