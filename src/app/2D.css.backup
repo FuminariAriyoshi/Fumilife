@@ -1,0 +1,421 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@50;100;200;400;500;700&display=swap');
+
+/* Chrome, Safari, Edge 用 */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* Firefox 用 */
+html {
+    scrollbar-width: none;
+    cursor: none;
+    /* 通常のカーソルを非表示 */
+}
+
+html * {
+    cursor: none !important;
+    /* すべての要素で通常のカーソルを非表示 */
+}
+
+/* loadページではカーソルを表示 */
+.load-page,
+.load-page * {
+    cursor: auto !important;
+}
+
+body {
+    -ms-overflow-style: none;
+    background: #ffffff;
+    color: #111;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    overflow: hidden;
+    overscroll-behavior-x: none;
+    transition: background-color 0.3s ease;
+    cursor: none;
+    /* 通常のカーソルを非表示 */
+}
+
+body[data-theme="dark"] {
+    background: #0e0e0e;
+    color: #eeeeee;
+}
+
+/* 2Dページの main（LIFE / 動画グリッド）が確実に表示されるように */
+body main {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+}
+
+/* 四辺に白グラデーションの固定オーバーレイ（動画より前面） */
+.glid-edge-gradient {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    pointer-events: none;
+    background:
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, transparent 50%),
+        linear-gradient(to top, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+    /* linear-gradient(to right, rgba(255, 255, 255, 0.6) 0%, transparent 0%),
+        linear-gradient(to left, rgba(255, 255, 255, 0.6) 0%, transparent 0%); */
+    background-size: 100% 20%, 100% 20%, 20% 100%, 20% 100%;
+    background-position: top center, bottom center, left center, right center;
+    background-repeat: no-repeat;
+}
+
+body[data-theme="dark"] .glid-edge-gradient {
+    background:
+        linear-gradient(to bottom, rgba(14, 14, 14, 0.6) 0%, transparent 15%),
+        linear-gradient(to top, rgba(14, 14, 14, 0.6) 0%, transparent 15%),
+        linear-gradient(to right, rgba(14, 14, 14, 0.6) 0%, transparent 15%),
+        linear-gradient(to left, rgba(14, 14, 14, 0.6) 0%, transparent 15%);
+    background-size: 100% 20%, 100% 20%, 20% 100%, 20% 100%;
+    background-position: top center, bottom center, left center, right center;
+    background-repeat: no-repeat;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: inherit;
+}
+
+
+.infinite-scroll-container {
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.infinite-scroll-container .container {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    width: max-content;
+    will-change: transform;
+    transform-origin: 0 0;
+    margin: 0;
+    padding: 0;
+    column-gap: 0;
+    row-gap: 0;
+}
+
+.infinite-scroll-container .content {
+    pointer-events: none;
+    display: grid;
+    width: max-content;
+    grid-template-columns: repeat(var(--grid-cols, 5), 1fr);
+    gap: 5vw;
+    padding: 2.5vw;
+    place-items: center;
+}
+
+.infinite-scroll-container .content--empty {
+    min-height: 40vh;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+}
+
+.infinite-scroll-container .content__empty-msg {
+    color: #888;
+    font-size: 14px;
+    padding: 2rem;
+    margin: 0;
+}
+
+.infinite-scroll-container .media {
+    width: 13vw;
+    aspect-ratio: 1;
+    /* 動画メタデータ取得後は VideoWithThumb の style で上書き */
+    user-select: none;
+    min-height: 0;
+    pointer-events: auto;
+    /* クリックでズームするため */
+    cursor: pointer;
+}
+
+.infinite-scroll-container .media img,
+.infinite-scroll-container .media video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+/* 動画読み込み中はサムネイルを表示 */
+.infinite-scroll-container .media.media--video {
+    position: relative;
+}
+
+.infinite-scroll-container .media__thumb {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.infinite-scroll-container .media__video {
+    position: relative;
+    z-index: 0;
+}
+
+.infinite-scroll-container .media__video.media__video--loading {
+    opacity: 0;
+    position: absolute;
+    inset: 0;
+}
+
+@media (max-width: 768px) {
+    .infinite-scroll-container .content {
+        gap: 5vw;
+        padding: 2.5vw;
+        grid-template-columns: repeat(3, 1fr);
+        /* Reduce columns on mobile if needed, or keep 5 but adjust size */
+    }
+
+    .infinite-scroll-container .media {
+        width: 60vw;
+        /* Make images larger on mobile */
+    }
+}
+
+
+
+/* Corner Elements Style */
+.corner-element {
+    position: fixed;
+    z-index: 999;
+    font-weight: 400;
+    font-size: 1rem;
+    color: white;
+    opacity: 0.8;
+    mix-blend-mode: difference;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.corner-element.title {
+    padding: 0 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-container-wrapper {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+}
+
+.btn-container {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+}
+
+.GrdLst-container-wrapper {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+}
+
+.GrdLst-container {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+}
+
+.GrdLst-container a {
+    text-decoration: none;
+    border: none;
+    border-bottom: none;
+}
+
+/* LIGHT/DARKボタン用のdark themeスタイル（デフォルトはLIGHT） */
+body[data-theme="dark"] .btn-container .btn {
+    color: white !important;
+    mix-blend-mode: difference !important;
+    opacity: 0.7;
+}
+
+body[data-theme="dark"] .btn-container .btn:hover {
+    opacity: 0.9;
+    mix-blend-mode: difference !important;
+}
+
+body[data-theme="dark"] .btn-container .btn--active {
+    opacity: 1;
+    color: white !important;
+    mix-blend-mode: difference !important;
+}
+
+/* GRID/LISTボタン用のdark themeスタイル（デフォルトはLIGHT） */
+body[data-theme="dark"] .GrdLst-container .btn {
+    color: white !important;
+    mix-blend-mode: difference !important;
+    opacity: 0.7;
+}
+
+body[data-theme="dark"] .GrdLst-container .btn:hover {
+    opacity: 0.9;
+    mix-blend-mode: difference !important;
+}
+
+body[data-theme="dark"] .GrdLst-container .btn--active {
+    opacity: 1;
+    color: white !important;
+    mix-blend-mode: difference !important;
+}
+
+.btn {
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    color: #111;
+    mix-blend-mode: difference;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    outline: none;
+    opacity: 0.5;
+}
+
+.btn:active,
+.btn:focus,
+.btn:focus-visible {
+    background: none !important;
+    outline: none !important;
+    border: none !important;
+}
+
+.btn:active {
+    opacity: 1;
+}
+
+.btn--active {
+    opacity: 1;
+}
+
+
+
+/* List handling */
+.sns-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sns-list li {
+    line-height: auto;
+}
+
+/* // ==== Positioning ====== */
+
+.title {
+    top: 20px;
+    left: 0;
+    right: 20px;
+    width: auto;
+    /* left+right で幅を取る（width:100% + right だと左がはみ出して見切れる） */
+}
+
+.sns {
+    bottom: 20px;
+    right: 20px;
+    text-align: right;
+}
+
+.info {
+    bottom: 20px;
+    left: 20px;
+}
+
+/* // ==== Position End ===== */
+
+.corner-element a {
+    color: white;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+/* カスタムカーソル（fill、difference） */
+.custom-cursor {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border: none;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transform: translate(-50%, -50%);
+    background: white;
+}
+
+body[data-theme="dark"] .custom-cursor {
+    background: white;
+}
+
+
+.centerTextWrapper {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+}
+
+.centerTextWrapper--hidden {
+    opacity: 0;
+}
+
+.centerText {
+    position: absolute;
+    font-size: 1.2rem;
+    font-family: "Snell Roundhand", cursive;
+    font-weight: 400;
+    color: #111;
+    mix-blend-mode: normal;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    white-space: nowrap;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+body[data-theme="dark"] .centerText {
+    color: white;
+    mix-blend-mode: difference;
+}
+
+.centerText.active {
+    opacity: 0.8;
+    visibility: visible;
+}
