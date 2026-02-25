@@ -23,74 +23,78 @@ export default function AboutPageClient() {
         };
 
         const ctx = gsap.context(() => {
-            // Reveal huge title
-            gsap.fromTo(".about-hero-title",
-                { y: "110%", autoAlpha: 1 },
-                {
-                    y: "0%",
-                    autoAlpha: 1,
-                    duration: 2,
-                    ease: "expo.out",
-                    delay: 0.2,
-                }
-            );
-
             // Target elements for word reveal
-            const introParagraph = document.querySelector(".about-bio p");
+            const introItems = document.querySelectorAll(".about-bio li");
             const valueItems = document.querySelectorAll(".about-value li");
             const socialLinks = document.querySelectorAll(".about-socials-col a");
+            const projectItems = document.querySelectorAll(".about-lists-right-wrapper li");
 
-            if (introParagraph) wrapWordsInSpan(introParagraph);
+            introItems.forEach(item => wrapWordsInSpan(item));
             valueItems.forEach(item => wrapWordsInSpan(item));
             socialLinks.forEach(link => wrapWordsInSpan(link));
+            projectItems.forEach(item => wrapWordsInSpan(item));
 
             const labels = document.querySelectorAll(".about-list-title");
-            const allWords = document.querySelectorAll(".about-bio p .word-inner, .about-value li .word-inner, .about-socials-col a .word-inner");
-            const parents = document.querySelectorAll(".about-bio, .about-value, .about-socials-col");
+            const introWords = document.querySelectorAll(".about-bio li .word-inner");
+            const valueWords = document.querySelectorAll(".about-value li .word-inner");
+            const socialWords = document.querySelectorAll(".about-socials-col a .word-inner");
+            const projectWords = document.querySelectorAll(".about-lists-right-wrapper li .word-inner");
+
+            const parents = document.querySelectorAll(".about-bio, .about-value, .about-socials-col, .about-lists-right-wrapper");
 
             // Timeline for coordinated reveal (Page Load Initial Animation)
             const tl = gsap.timeline({
-                delay: 1.2, // タイトルのリビール開始後、少し遅れて開始
+                delay: 0.2, // 初期ディレイ
             });
 
-            // Make parents visible immediately when timeline starts
+            const wordAnim = {
+                yPercent: 100,
+                targetY: 0,
+                duration: 4.0,
+                stagger: 0.02,
+                ease: "expo.out"
+            };
+
+            // Make elements visible and sequence animations
             tl.set(parents, { autoAlpha: 1 })
+                .fromTo(".about-hero-title",
+                    { y: "110%", autoAlpha: 1 },
+                    {
+                        y: "0%",
+                        autoAlpha: 1,
+                        duration: 2.0,
+                        ease: "expo.out",
+                    }
+                )
                 .fromTo(labels,
                     { autoAlpha: 0, yPercent: 100 },
                     {
                         autoAlpha: 1,
                         yPercent: 0,
                         duration: 0.8,
-                        stagger: 0.2,
+                        stagger: 0,
                         ease: "power2.out",
-                    })
-                .fromTo(allWords,
-                    { yPercent: 100 },
+                    },
+                    "<0.2"
+                )
+                .fromTo(".about-list-line",
+                    { scaleX: 0, autoAlpha: 1 },
                     {
-                        yPercent: 0,
-                        duration: 1.2,
-                        stagger: 0.025, // staggerを大きくした (0.01 -> 0.025)
+                        scaleX: 1,
+                        autoAlpha: 1,
+                        duration: 1.8,
+                        stagger: 0,
                         ease: "expo.out",
                     },
-                    "+=0.4" // ラベル表示の途中から開始
-                );
+                    "<" // ラベルのアニメーションと同時に開始
+                )
+                .fromTo(introWords, { yPercent: 100 }, { yPercent: 0, duration: wordAnim.duration, stagger: wordAnim.stagger, ease: wordAnim.ease }, "<0.18")
+                .fromTo(valueWords, { yPercent: 100 }, { yPercent: 0, duration: wordAnim.duration, stagger: wordAnim.stagger, ease: wordAnim.ease }, "<")
+                .fromTo(socialWords, { yPercent: 100 }, { yPercent: 0, duration: wordAnim.duration, stagger: wordAnim.stagger, ease: wordAnim.ease }, "<")
+                .fromTo(projectWords, { yPercent: 100 }, { yPercent: 0, duration: wordAnim.duration, stagger: wordAnim.stagger, ease: wordAnim.ease }, "<");
 
-            // Selected Projects / Capabilities (desktop only) reveal
-            const rightLists = document.querySelector(".about-lists-right-wrapper");
-            if (rightLists) {
-                gsap.fromTo(rightLists,
-                    { autoAlpha: 0 },
-                    {
-                        autoAlpha: 1,
-                        duration: 1,
-                        ease: "power2.out",
-                        scrollTrigger: {
-                            trigger: rightLists,
-                            start: "top 95%",
-                        },
-                    }
-                );
-            }
+            // Ensure visibility for right items
+            tl.set(".about-lists-right-wrapper", { autoAlpha: 1 }, 0);
 
         }, containerRef);
 
@@ -111,16 +115,21 @@ export default function AboutPageClient() {
                         <section className="about-grid">
                             <div className="about-bio">
                                 <h2 className="about-list-title">Introduction</h2>
-                                <p className="about-list-item text-small" style={{ lineHeight: '2' }}>
-                                    FUMINARI ARIYOSHI IS A CREATIVE DEVELOPER FOCUSING ON THE INTERSECTION OF DESIGN AND TECHNOLOGY.
-                                    UNDER THE MONIKER FUMILIFE, HE EXPLORES DIGITAL AESTHETICS THROUGH MOTION, INTERACTION, AND MINIMALISM.
-                                    BASED IN JAPAN, HE WORKS WITH FORWARD-THINKING CLIENTS TO BUILD IMMERSIVE WEB EXPERIENCES.
-                                </p>
+                                <div className="about-list-line"></div>
+                                <ul className="about-list-items text-small" style={{ lineHeight: '2' }}>
+                                    <li className="about-list-item">FUMINARI ARIYOSHI IS A CREATIVE DEVELOPER</li>
+                                    <li className="about-list-item">FOCUSING ON THE INTERSECTION OF DESIGN AND TECHNOLOGY.</li>
+                                    <li className="about-list-item">UNDER THE MONIKER FUMILIFE, HE EXPLORES DIGITAL AESTHETICS</li>
+                                    <li className="about-list-item">THROUGH MOTION, INTERACTION, AND MINIMALISM.</li>
+                                    <li className="about-list-item">BASED IN JAPAN, HE WORKS WITH FORWARD-THINKING CLIENTS</li>
+                                    <li className="about-list-item">TO BUILD IMMERSIVE WEB EXPERIENCES.</li>
+                                </ul>
                             </div>
                         </section>
 
                         <section className="about-value">
                             <h2 className="about-list-title">Brand Value</h2>
+                            <div className="about-list-line"></div>
                             <ul className="about-list-items">
                                 <li className="about-list-item">1. STRATEGIC STORYTELLING</li>
                                 <li className="about-list-item">2. MINIMALIST AESTHETIC</li>
@@ -131,6 +140,7 @@ export default function AboutPageClient() {
 
                         <div className="about-socials-col">
                             <h2 className="about-list-title">Socials</h2>
+                            <div className="about-list-line"></div>
                             <ul className="about-list-items">
                                 <li className="about-list-item">
                                     <a href="https://www.instagram.com/fumilife__a" target="_blank" rel="noopener noreferrer">Instagram <span className="external-link-arrow">↗</span></a>
@@ -143,29 +153,30 @@ export default function AboutPageClient() {
                                 </li>
                             </ul>
                         </div>
-                    </div>
+                        <div className="about-lists-right-wrapper">
+                            <div>
+                                <h2 className="about-list-title">Selected Projects</h2>
+                                <div className="about-list-line"></div>
+                                <ul className="about-list-items">
+                                    <li className="about-list-item">BRAND IDENTITY SYSTEM</li>
+                                    <li className="about-list-item">3D SHADER EXPLORER</li>
+                                    <li className="about-list-item">GLID MOTION GRID</li>
+                                    <li className="about-list-item">VOICE INTERFACE DESIGN</li>
+                                    <li className="about-list-item">GENERATIVE ART SERIES</li>
+                                </ul>
+                            </div>
 
-                    <div className="about-lists-right-wrapper">
-                        <div>
-                            <h2 className="about-list-title">Selected Projects</h2>
-                            <ul className="about-list-items">
-                                <li className="about-list-item">BRAND IDENTITY SYSTEM</li>
-                                <li className="about-list-item">3D SHADER EXPLORER</li>
-                                <li className="about-list-item">GLID MOTION GRID</li>
-                                <li className="about-list-item">VOICE INTERFACE DESIGN</li>
-                                <li className="about-list-item">GENERATIVE ART SERIES</li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h2 className="about-list-title">Capabilities</h2>
-                            <ul className="about-list-items">
-                                <li className="about-list-item">CREATIVE DIRECTION</li>
-                                <li className="about-list-item">UI/UX DESIGN</li>
-                                <li className="about-list-item">FRONT-END DEVELOPMENT</li>
-                                <li className="about-list-item">3D WEB (THREE.JS / WEBGL)</li>
-                                <li className="about-list-item">INTERACTION DESIGN</li>
-                            </ul>
+                            <div>
+                                <h2 className="about-list-title">Capabilities</h2>
+                                <div className="about-list-line"></div>
+                                <ul className="about-list-items">
+                                    <li className="about-list-item">CREATIVE DIRECTION</li>
+                                    <li className="about-list-item">UI/UX DESIGN</li>
+                                    <li className="about-list-item">FRONT-END DEVELOPMENT</li>
+                                    <li className="about-list-item">3D WEB (THREE.JS / WEBGL)</li>
+                                    <li className="about-list-item">INTERACTION DESIGN</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

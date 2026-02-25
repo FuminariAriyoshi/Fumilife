@@ -20,7 +20,8 @@
 
 .about-grid>div,
 .about-value,
-.about-socials-col {
+.about-socials-col,
+.about-list-line {
     opacity: 0;
     visibility: hidden;
 }
@@ -54,11 +55,14 @@ body[data-theme="dark"] .about-page {
 }
 
 .about-info-stack {
-    grid-column: 1 / span 9;
+    grid-column: 1 / span 12;
     display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    grid-template-rows: auto 1fr;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto auto;
+    align-content: space-between;
     gap: 40px;
+    flex: 1;
+    height: 100%;
 }
 
 .about-grid {
@@ -76,7 +80,16 @@ body[data-theme="dark"] .about-page {
 .about-socials-col {
     grid-column: 1 / span 3;
     grid-row: 2;
-    align-self: end;
+    align-self: start;
+}
+
+.about-lists-right-wrapper {
+    grid-column: 7 / span 6;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    align-self: start;
 }
 
 /* Typography Helpers */
@@ -111,21 +124,25 @@ body[data-theme="dark"] .about-page {
     grid-column: 1 / span 5;
 }
 
-.about-lists-right-wrapper {
-    grid-column: 10 / span 3;
-    display: flex;
-    flex-direction: row;
-    gap: 120px;
-    align-self: end;
-}
+
 
 /* List Styles */
 .about-list-title {
     font-size: 11px;
     color: var(--accent-color);
     margin-bottom: 24px;
-    border-bottom: 1px solid rgba(186, 196, 184, 0.2);
     padding-bottom: 8px;
+    overflow: hidden;
+}
+
+.about-list-line {
+    width: 100%;
+    height: 1px;
+    background-color: rgba(186, 196, 184, 0.2);
+    margin-top: -24px;
+    /* タイトルとの距離を調整 */
+    margin-bottom: 24px;
+    transform-origin: left;
 }
 
 .about-list-items {
@@ -135,6 +152,10 @@ body[data-theme="dark"] .about-page {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.about-bio .about-list-items {
+    gap: 0;
 }
 
 .about-list-item {
@@ -183,6 +204,7 @@ body[data-theme="dark"] .about-page {
         display: flex;
         align-items: center;
         min-height: auto;
+        margin-top: 32px;
     }
 
     .about-container {
@@ -208,7 +230,7 @@ body[data-theme="dark"] .about-page {
         display: flex;
         flex-direction: column;
         flex: 1;
-        margin-top: 20px;
+        margin-top: 0;
         gap: 0;
     }
 
@@ -217,6 +239,7 @@ body[data-theme="dark"] .about-page {
         flex-direction: column;
         justify-content: space-between;
         flex: 1;
+        padding: 64px 0;
     }
 
     .about-grid,

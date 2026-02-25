@@ -333,10 +333,10 @@ export default function ListPageClient({ videos = [] }) {
       if (letters.length) {
         gsap.fromTo(
           letters,
-          { y: 150 },
+          { yPercent: 110 },
           {
-            y: 0,
-            duration: 1.2,
+            yPercent: 0,
+            duration: 2.,
             ease,
             delay: delay + 0.2,
             stagger: { each: 0.03, from: "start" },
@@ -448,11 +448,11 @@ export default function ListPageClient({ videos = [] }) {
     const allTexts = sorted.flatMap(d => d.texts);
 
     const listEl = listRef.current;
-    const duration = 2.5;
+    const duration = 2.8;
     const ease = "expo.out";
 
     const tl = gsap.timeline({
-      delay: 1, // 1秒の間を空ける
+      delay: 0.5, // 1秒の間を空ける
       onComplete: () => setEntranceDone(true),
     });
 
@@ -472,7 +472,7 @@ export default function ListPageClient({ videos = [] }) {
     }
 
     // テキストのアニメーション（1秒のディレイを指定）
-    textInitialAnimation(allTexts, duration, ease, 1);
+    textInitialAnimation(allTexts, duration, ease, 0.5);
 
     if (listEl) {
       tl.fromTo(listEl, { y: window.innerHeight }, { y: 0, duration, ease }, 0);
