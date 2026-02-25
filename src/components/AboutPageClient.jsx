@@ -31,24 +31,26 @@ export default function AboutPageClient() {
                     autoAlpha: 1,
                     duration: 2,
                     ease: "expo.out",
-                    delay: 0.5,
+                    delay: 0.2,
                 }
             );
 
             // Target elements for word reveal
             const introParagraph = document.querySelector(".about-bio p");
             const valueItems = document.querySelectorAll(".about-value li");
+            const socialLinks = document.querySelectorAll(".about-socials-col a");
 
             if (introParagraph) wrapWordsInSpan(introParagraph);
             valueItems.forEach(item => wrapWordsInSpan(item));
+            socialLinks.forEach(link => wrapWordsInSpan(link));
 
             const labels = document.querySelectorAll(".about-list-title");
-            const allWords = document.querySelectorAll(".about-bio p .word-inner, .about-value li .word-inner");
-            const parents = document.querySelectorAll(".about-bio, .about-value");
+            const allWords = document.querySelectorAll(".about-bio p .word-inner, .about-value li .word-inner, .about-socials-col a .word-inner");
+            const parents = document.querySelectorAll(".about-bio, .about-value, .about-socials-col");
 
             // Timeline for coordinated reveal (Page Load Initial Animation)
             const tl = gsap.timeline({
-                // delay: 1.2, // タイトルのリビール開始後、少し遅れて開始
+                delay: 1.2, // タイトルのリビール開始後、少し遅れて開始
             });
 
             // Make parents visible immediately when timeline starts
@@ -73,19 +75,22 @@ export default function AboutPageClient() {
                     "+=0.4" // ラベル表示の途中から開始
                 );
 
-            // Reveal footer (Remains scroll triggered or adjust as needed)
-            gsap.fromTo(".about-footer",
-                { autoAlpha: 0 },
-                {
-                    autoAlpha: 1,
-                    duration: 1,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: ".about-footer",
-                        start: "top 95%",
-                    },
-                }
-            );
+            // Selected Projects / Capabilities (desktop only) reveal
+            const rightLists = document.querySelector(".about-lists-right-wrapper");
+            if (rightLists) {
+                gsap.fromTo(rightLists,
+                    { autoAlpha: 0 },
+                    {
+                        autoAlpha: 1,
+                        duration: 1,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: rightLists,
+                            start: "top 95%",
+                        },
+                    }
+                );
+            }
 
         }, containerRef);
 
@@ -95,14 +100,14 @@ export default function AboutPageClient() {
     return (
         <div className="about-page" ref={containerRef}>
             <div className="about-container">
-                <div className="about-top-group">
-                    <section className="about-hero" style={{ overflow: 'hidden' }}>
-                        <h1 className="about-hero-title text-huge">
-                            FUMILIFE
-                        </h1>
-                    </section>
+                <section className="about-hero" style={{ overflow: 'hidden' }}>
+                    <h1 className="about-hero-title text-huge">
+                        FUMILIFE
+                    </h1>
+                </section>
 
-                    <div className="about-main-wrapper">
+                <div className="about-content-wrapper">
+                    <div className="about-info-stack">
                         <section className="about-grid">
                             <div className="about-bio">
                                 <h2 className="about-list-title">Introduction</h2>
@@ -123,51 +128,47 @@ export default function AboutPageClient() {
                                 <li className="about-list-item">4. EMOTIONAL INTERACTION</li>
                             </ul>
                         </section>
-                    </div>
-                </div>
 
-                <section className="about-footer">
-                    <div className="about-lists">
                         <div className="about-socials-col">
                             <h2 className="about-list-title">Socials</h2>
                             <ul className="about-list-items">
                                 <li className="about-list-item">
-                                    <a href="https://www.instagram.com/fumilife" target="_blank" rel="noopener noreferrer">Instagram <span className="external-link-arrow">↗</span></a>
+                                    <a href="https://www.instagram.com/fumilife__a" target="_blank" rel="noopener noreferrer">Instagram <span className="external-link-arrow">↗</span></a>
                                 </li>
                                 <li className="about-list-item">
-                                    <a href="https://www.youtube.com/@fumilife" target="_blank" rel="noopener noreferrer">Youtube <span className="external-link-arrow">↗</span></a>
+                                    <a href="https://www.youtube.com/@fumi99" target="_blank" rel="noopener noreferrer">Youtube <span className="external-link-arrow">↗</span></a>
                                 </li>
                                 <li className="about-list-item">
                                     <a href="#" target="_blank" rel="noopener noreferrer">X <span className="external-link-arrow">↗</span></a>
                                 </li>
                             </ul>
                         </div>
+                    </div>
 
-                        <div className="about-lists-right-wrapper">
-                            <div>
-                                <h2 className="about-list-title">Selected Projects</h2>
-                                <ul className="about-list-items">
-                                    <li className="about-list-item">BRAND IDENTITY SYSTEM</li>
-                                    <li className="about-list-item">3D SHADER EXPLORER</li>
-                                    <li className="about-list-item">GLID MOTION GRID</li>
-                                    <li className="about-list-item">VOICE INTERFACE DESIGN</li>
-                                    <li className="about-list-item">GENERATIVE ART SERIES</li>
-                                </ul>
-                            </div>
+                    <div className="about-lists-right-wrapper">
+                        <div>
+                            <h2 className="about-list-title">Selected Projects</h2>
+                            <ul className="about-list-items">
+                                <li className="about-list-item">BRAND IDENTITY SYSTEM</li>
+                                <li className="about-list-item">3D SHADER EXPLORER</li>
+                                <li className="about-list-item">GLID MOTION GRID</li>
+                                <li className="about-list-item">VOICE INTERFACE DESIGN</li>
+                                <li className="about-list-item">GENERATIVE ART SERIES</li>
+                            </ul>
+                        </div>
 
-                            <div>
-                                <h2 className="about-list-title">Capabilities</h2>
-                                <ul className="about-list-items">
-                                    <li className="about-list-item">CREATIVE DIRECTION</li>
-                                    <li className="about-list-item">UI/UX DESIGN</li>
-                                    <li className="about-list-item">FRONT-END DEVELOPMENT</li>
-                                    <li className="about-list-item">3D WEB (THREE.JS / WEBGL)</li>
-                                    <li className="about-list-item">INTERACTION DESIGN</li>
-                                </ul>
-                            </div>
+                        <div>
+                            <h2 className="about-list-title">Capabilities</h2>
+                            <ul className="about-list-items">
+                                <li className="about-list-item">CREATIVE DIRECTION</li>
+                                <li className="about-list-item">UI/UX DESIGN</li>
+                                <li className="about-list-item">FRONT-END DEVELOPMENT</li>
+                                <li className="about-list-item">3D WEB (THREE.JS / WEBGL)</li>
+                                <li className="about-list-item">INTERACTION DESIGN</li>
+                            </ul>
                         </div>
                     </div>
-                </section>
+                </div>
             </div>
         </div>
     );

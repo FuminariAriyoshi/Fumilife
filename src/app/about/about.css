@@ -11,8 +11,8 @@
     width: 100%;
     font-family: 'Inter', sans-serif;
     /* text-transform: uppercase; 削除：スクリプト体に対応 */
-    overflow: hidden;
-    /* overflow-x/y 両方を隠す */
+    overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
     z-index: 1;
     /* Prevent FOUC (Flash of Unstyled Content) and CLS from animations */
@@ -20,7 +20,7 @@
 
 .about-grid>div,
 .about-value,
-.about-footer {
+.about-socials-col {
     opacity: 0;
     visibility: hidden;
 }
@@ -44,25 +44,39 @@ body[data-theme="dark"] .about-page {
     box-sizing: border-box;
 }
 
-.about-top-group {
-    display: flex;
-    flex-direction: column;
-    gap: 80px;
-}
-
-.about-main-wrapper {
+.about-content-wrapper {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 40px;
     width: 100%;
+    flex: 1;
+    margin-top: 80px;
+}
+
+.about-info-stack {
+    grid-column: 1 / span 9;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: auto 1fr;
+    gap: 40px;
 }
 
 .about-grid {
     grid-column: 1 / span 6;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
 }
 
 .about-value {
     grid-column: 7 / span 3;
+    grid-row: 1;
+}
+
+.about-socials-col {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+    align-self: end;
 }
 
 /* Typography Helpers */
@@ -92,27 +106,17 @@ body[data-theme="dark"] .about-page {
 }
 
 /* Layout Grid */
-.about-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 40px;
-}
-
+/* Layout Grid (Desktop) */
 .about-bio {
     grid-column: 1 / span 5;
 }
 
-.about-lists {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-}
-
 .about-lists-right-wrapper {
+    grid-column: 10 / span 3;
     display: flex;
     flex-direction: row;
     gap: 120px;
+    align-self: end;
 }
 
 /* List Styles */
@@ -175,43 +179,56 @@ body[data-theme="dark"] .about-page {
 }
 
 @media (max-width: 1024px) {
-    .about-top-group {
-        gap: 5vh;
-        margin-top: 5vh;
-    }
-
     .about-hero {
         display: flex;
         align-items: center;
         min-height: auto;
     }
 
-    .about-grid,
-    .about-value {
-        grid-column: 1 / span 12;
-    }
-
-    .about-main-wrapper {
-        gap: 60px;
-    }
-
     .about-container {
         height: auto;
         min-height: 100vh;
-        padding-top: 5vh;
-        /* Gapと同じ値にしてタイトルを中央に配置 */
+        padding: 80px 32px 60px;
+    }
+
+    .about-content-wrapper {
+        margin-top: 5vh;
+        gap: 60px;
     }
 }
 
 @media (max-width: 768px) {
-    .about-lists-right-wrapper {
-        display: none;
-        /* スマホでは Selected Projects と Capabilities を非表示 */
+    .about-container {
+        height: auto;
+        min-height: 100vh;
+        padding: 60px 32px 40px;
     }
 
-    .about-lists {
-        justify-content: flex-start;
-        /* リストが非表示になっても Socials の位置を左側に固定 */
+    .about-content-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        margin-top: 20px;
+        gap: 0;
+    }
+
+    .about-info-stack {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: 1;
+    }
+
+    .about-grid,
+    .about-value,
+    .about-socials-col {
+        display: block;
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .about-lists-right-wrapper {
+        display: none;
     }
 
     .external-link-arrow {
