@@ -7,6 +7,7 @@ import "../app/about/about.css";
 
 export default function AboutPageClient() {
     const containerRef = useRef(null);
+    const ARROW_SVG = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="external-link-icon" style="margin-left: 4px; display: inline-block; vertical-align: middle;"><path d="M1 9L9 1M9 1H2M9 1V8" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
     useEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
@@ -18,7 +19,10 @@ export default function AboutPageClient() {
             const text = element.textContent.trim();
             element.innerHTML = text
                 .split(/\s+/) // 複数の空白にも対応
-                .map(word => `<span class="word" style="display:inline-block; overflow:hidden; vertical-align:bottom;"><span class="word-inner" style="display:inline-block;">${word}</span></span>`)
+                .map(word => {
+                    const content = word === "↗" ? ARROW_SVG : word;
+                    return `<span class="word" style="display:inline-block; overflow:hidden; vertical-align:bottom;"><span class="word-inner" style="display:inline-block;">${content}</span></span>`;
+                })
                 .join(' ');
         };
 
@@ -143,13 +147,13 @@ export default function AboutPageClient() {
                             <div className="about-list-line"></div>
                             <ul className="about-list-items">
                                 <li className="about-list-item">
-                                    <a href="https://www.instagram.com/fumilife__a" target="_blank" rel="noopener noreferrer">Instagram <span className="external-link-arrow">↗</span></a>
+                                    <a href="https://www.instagram.com/fumilife__a" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
                                 </li>
                                 <li className="about-list-item">
-                                    <a href="https://www.youtube.com/@Fumi_design99" target="_blank" rel="noopener noreferrer">Youtube <span className="external-link-arrow">↗</span></a>
+                                    <a href="https://www.youtube.com/@Fumi_design99" target="_blank" rel="noopener noreferrer">Youtube ↗</a>
                                 </li>
                                 <li className="about-list-item">
-                                    <a href="https://x.com/Fumi__aa" target="_blank" rel="noopener noreferrer">X <span className="external-link-arrow">↗</span></a>
+                                    <a href="https://x.com/Fumi__aa" target="_blank" rel="noopener noreferrer">X ↗</a>
                                 </li>
                             </ul>
                         </div>

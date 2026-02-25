@@ -278,8 +278,8 @@ export default function TwoDPageClient({ videos = [] }) {
           if (isCameraAnimatingRef.current) return;
           if (self.event.type === "wheel") incrX -= self.deltaX;
           else {
-            // モバイル・ドラッグでの速度を向上 (以前は * 2)
-            incrX += self.deltaX * 3.5;
+            // モバイル・ドラッグでの速度を向上
+            incrX += self.deltaX * 5.5;
           }
           xTo(incrX);
         },
@@ -297,8 +297,9 @@ export default function TwoDPageClient({ videos = [] }) {
           if (isCameraAnimatingRef.current) return;
           if (self.event.type === "wheel") incrY -= self.deltaY;
           else {
-            // モバイル・ドラッグでの速度を向上 (以前は * 2)
-            incrY += self.deltaY * 3.5;
+            // モバイル・ドラッグでの速度を向上（上方向への移動感度をさらにブースト）
+            const multiplier = self.deltaY > 0 ? 8.5 : 5.5;
+            incrY += self.deltaY * multiplier;
           }
           yTo(incrY);
         },

@@ -262,8 +262,4 @@ body[data-theme="dark"] .about-page {
     .about-lists-right-wrapper {
         display: none;
     }
-
-    .external-link-arrow {
-        display: none;
-    }
 }
