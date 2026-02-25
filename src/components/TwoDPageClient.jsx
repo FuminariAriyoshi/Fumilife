@@ -93,7 +93,7 @@ function VideoWithThumb({ src, thumb }) {
   );
 }
 
-const DUPLICATES_COUNT = 3; // 1本 + 3重複 = 4ブロックで2x2無限グリッド（Tutorial 026）
+const DUPLICATES_COUNT = 8; // 1本 + 8重複 = 9ブロックで3x3無限グリッド（隙間が見えるのを防ぐため）
 
 export default function TwoDPageClient({ videos = [] }) {
   const videoList = Array.isArray(videos) ? videos : [];

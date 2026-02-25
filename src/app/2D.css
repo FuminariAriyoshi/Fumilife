@@ -97,7 +97,7 @@ h6 {
 
 .infinite-scroll-container .container {
     display: grid;
-    grid-template-columns: repeat(2, auto);
+    grid-template-columns: repeat(3, auto);
     width: max-content;
     will-change: transform;
     transform-origin: 0 0;
