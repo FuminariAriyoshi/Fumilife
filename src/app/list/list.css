@@ -202,7 +202,7 @@ body[data-theme="dark"] .list-page__video-wrapper {
     font-weight: 700;
     color: #141414;
     z-index: 10;
-    margin-bottom: 5px;
+    padding-bottom: 5px;
     transition: font-size 0.3s ease;
     overflow-y: hidden;
     white-space: nowrap;
