@@ -226,7 +226,12 @@ export default function TwoDPageClient({ videos = [] }) {
             observerIgnoreEventsRef.current--;
             return;
           }
-          if (isObserverDisabledByZoomRef.current) return;
+          if (isObserverDisabledByZoomRef.current) {
+            if (!isCameraAnimatingRef.current) {
+              zoomOut();
+            }
+            return;
+          }
           if (isCameraAnimatingRef.current) return;
           if (self.event.type === "wheel") incrX -= self.deltaX;
           else incrX += self.deltaX * 2;
@@ -237,7 +242,12 @@ export default function TwoDPageClient({ videos = [] }) {
             observerIgnoreEventsRef.current--;
             return;
           }
-          if (isObserverDisabledByZoomRef.current) return;
+          if (isObserverDisabledByZoomRef.current) {
+            if (!isCameraAnimatingRef.current) {
+              zoomOut();
+            }
+            return;
+          }
           if (isCameraAnimatingRef.current) return;
           if (self.event.type === "wheel") incrY -= self.deltaY;
           else incrY += self.deltaY * 2;
@@ -271,13 +281,7 @@ export default function TwoDPageClient({ videos = [] }) {
         xTo = createXTo();
         yTo = createYTo();
 
-        // Observer が生きていれば一度殺して再作成（モバイルでのイベントスタック防止）
-        if (observerHolder.current) {
-          observerHolder.current.kill();
-          observerHolder.current = null;
-        }
         observerIgnoreEventsRef.current = 0;
-        observerHolder.current = createObserver();
       };
 
       gsap.killTweensOf(container);
@@ -373,8 +377,6 @@ export default function TwoDPageClient({ videos = [] }) {
       savedIncrX = currentX;
       savedIncrY = currentY;
 
-      observerHolder.current?.kill();
-      observerHolder.current = null;
       isObserverDisabledByZoomRef.current = true;
 
       container.style.transformOrigin = `${localCenterX}px ${localCenterY}px`;
@@ -397,11 +399,10 @@ export default function TwoDPageClient({ videos = [] }) {
           isCameraAnimatingRef.current = false;
           isObserverDisabledByZoomRef.current = false;
           if (observerCreateTimeoutId != null) clearTimeout(observerCreateTimeoutId);
-          // quickTo を再作成してから Observer を復帰
+          // quickTo を再作成
           xTo = createXTo();
           yTo = createYTo();
           observerIgnoreEventsRef.current = 0;
-          observerHolder.current = createObserver();
         },
       });
       zoomedMediaRef.current = media;
