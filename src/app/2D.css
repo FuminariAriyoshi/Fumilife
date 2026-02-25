@@ -138,6 +138,7 @@ h6 {
     user-select: none;
     min-height: 0;
     cursor: pointer;
+    pointer-events: auto;
 }
 
 .infinite-scroll-container .media img,

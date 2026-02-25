@@ -7,7 +7,7 @@ import "../app/about/about.css";
 
 export default function AboutPageClient() {
     const containerRef = useRef(null);
-    const ARROW_SVG = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="external-link-icon" style="margin-left: 4px; display: inline-block; vertical-align: middle;"><path d="M1 9L9 1M9 1H2M9 1V8" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const ARROW_SVG = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" class="external-link-icon" style="margin-left: 4px; display: inline-block; vertical-align: middle;"><path d="M1 9L9 1M9 1H2M9 1V8" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
     useEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
@@ -20,8 +20,8 @@ export default function AboutPageClient() {
             element.innerHTML = text
                 .split(/\s+/) // 複数の空白にも対応
                 .map(word => {
-                    const content = word === "↗" ? ARROW_SVG : word;
-                    return `<span class="word" style="display:inline-block; overflow:hidden; vertical-align:bottom;"><span class="word-inner" style="display:inline-block;">${content}</span></span>`;
+                    if (word === "↗") return ARROW_SVG;
+                    return `<span class="word" style="display:inline-block; overflow:hidden; vertical-align:bottom;"><span class="word-inner" style="display:inline-block;">${word}</span></span>`;
                 })
                 .join(' ');
         };
