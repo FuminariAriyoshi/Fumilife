@@ -377,6 +377,18 @@ body[data-theme="dark"] .custom-cursor {
     background: white;
 }
 
+@media (max-width: 768px) {
+    .custom-cursor {
+        display: none !important;
+    }
+
+    html,
+    html *,
+    body {
+        cursor: auto !important;
+    }
+}
+
 
 .centerTextWrapper {
     position: fixed;
