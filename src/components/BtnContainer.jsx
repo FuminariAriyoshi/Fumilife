@@ -9,11 +9,11 @@ import { useState, useEffect } from "react";
  * テーマに応じたボタンのスタイルはCSSで管理。
  */
 export default function BtnContainer() {
-  const [theme, setTheme] = useState("LIGHT");
+  const [theme, setTheme] = useState("DARK");
   const isLight = theme === "LIGHT";
 
   useEffect(() => {
-    // デフォルトはLIGHTなので、LIGHTの時はdata-theme属性を削除
+    // デフォルトはDARKなので、LIGHTの時はdata-theme属性を削除
     // DARKの時のみdata-theme="dark"を設定
     if (isLight) {
       document.body.removeAttribute("data-theme");

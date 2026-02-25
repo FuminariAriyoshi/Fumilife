@@ -55,7 +55,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body>
+      <body data-theme="dark">
         <section>
           <div className="corner-element title">
             <TransitionLink href="/">FUMILIFE</TransitionLink>
