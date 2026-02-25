@@ -137,8 +137,6 @@ h6 {
     /* 動画メタデータ取得後は VideoWithThumb の style で上書き */
     user-select: none;
     min-height: 0;
-    pointer-events: auto;
-    /* クリックでズームするため */
     cursor: pointer;
 }
 
@@ -420,6 +418,9 @@ body[data-theme="dark"] .custom-cursor {
     visibility: hidden;
     white-space: nowrap;
     transition: opacity 1s ease, visibility 1s ease;
+    /* Snell Roundhand が Safari で見切れるのを防ぐ */
+    padding: 0 0.1em;
+    margin: 0 -0.1em;
 }
 
 body[data-theme="dark"] .centerText {

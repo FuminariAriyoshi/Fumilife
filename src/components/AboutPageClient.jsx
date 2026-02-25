@@ -146,10 +146,10 @@ export default function AboutPageClient() {
                                     <a href="https://www.instagram.com/fumilife__a" target="_blank" rel="noopener noreferrer">Instagram <span className="external-link-arrow">↗</span></a>
                                 </li>
                                 <li className="about-list-item">
-                                    <a href="https://www.youtube.com/@fumi99" target="_blank" rel="noopener noreferrer">Youtube <span className="external-link-arrow">↗</span></a>
+                                    <a href="https://www.youtube.com/@Fumi_design99" target="_blank" rel="noopener noreferrer">Youtube <span className="external-link-arrow">↗</span></a>
                                 </li>
                                 <li className="about-list-item">
-                                    <a href="#" target="_blank" rel="noopener noreferrer">X <span className="external-link-arrow">↗</span></a>
+                                    <a href="https://x.com/Fumi__aa" target="_blank" rel="noopener noreferrer">X <span className="external-link-arrow">↗</span></a>
                                 </li>
                             </ul>
                         </div>

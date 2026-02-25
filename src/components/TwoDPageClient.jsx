@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import gsap from "gsap";
 import { Observer } from "gsap/Observer";
+import { LoadContext } from "@/components/LoadPageWrapper";
 import "../app/2D.css";
 
 /**
@@ -105,6 +106,40 @@ export default function TwoDPageClient({ videos = [] }) {
   const observerIgnoreEventsRef = useRef(0); // 新 Observer 作成直後のゴーストイベントを無視する件数（スクロール中クリック対策）
   const [textIndex, setTextIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
+  const isLoadComplete = useContext(LoadContext);
+  const hasAnimatedEntranceRef = useRef(false);
+
+  // 初回エントランスアニメーション
+  useEffect(() => {
+    if (isLoadComplete && videoList.length > 0 && !hasAnimatedEntranceRef.current) {
+      hasAnimatedEntranceRef.current = true;
+
+      const mediaItems = document.querySelectorAll(".infinite-scroll-container .media");
+      const duration = 2.8;
+      const ease = "expo.out";
+
+      // ブラウザにレンダリングさせてから y の開始位置をセット
+      gsap.set(mediaItems, {
+        overflowY: "hidden",
+        autoAlpha: 0,
+        y: 100
+      });
+
+      // 中心からパッと広がるようなスタッガー
+      gsap.to(mediaItems, {
+        autoAlpha: 1,
+        y: 0,
+        duration: duration,
+        ease: ease,
+        stagger: {
+          each: 0.02,
+          from: "center",
+          grid: "auto"
+        },
+        delay: 3
+      });
+    }
+  }, [isLoadComplete, videoList.length]);
 
   // 文字の切り替えアニメーション（4秒ごとに更新）
   useEffect(() => {
@@ -206,10 +241,18 @@ export default function TwoDPageClient({ videos = [] }) {
     let xTo = createXTo();
     let yTo = createYTo();
 
-    let incrX = 0,
-      incrY = 0;
-    let savedIncrX = 0,
-      savedIncrY = 0;
+    // 初期カメラ位置: 中央のセット（block 4）が画面中央に来るように計算
+    const initialHalfX = dimensionsRef.current.halfX || window.innerWidth;
+    const initialHalfY = dimensionsRef.current.halfY || window.innerHeight;
+
+    let incrX = (window.innerWidth / 2) - (initialHalfX * 1.5),
+      incrY = (window.innerHeight / 2) - (initialHalfY * 1.5);
+
+    // 初期位置を即座に適用
+    gsap.set(container, { x: incrX, y: incrY });
+
+    let savedIncrX = incrX,
+      savedIncrY = incrY;
 
     const section = document.querySelector(".infinite-scroll-container");
     if (!section) return;

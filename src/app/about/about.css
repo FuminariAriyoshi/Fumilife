@@ -7,7 +7,7 @@
 
     background-color: transparent;
     color: var(--text-color);
-    min-height: 100vh;
+    height: 100vh;
     width: 100%;
     font-family: 'Inter', sans-serif;
     /* text-transform: uppercase; 削除：スクリプト体に対応 */
@@ -220,6 +220,14 @@ body[data-theme="dark"] .about-page {
 }
 
 @media (max-width: 768px) {
+    .about-hero {
+        margin-top: 3vh;
+    }
+
+    .about-list-line {
+        margin-bottom: 1.5vh;
+    }
+
     .about-container {
         height: auto;
         min-height: 100vh;
@@ -238,8 +246,9 @@ body[data-theme="dark"] .about-page {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        gap: 16px;
         flex: 1;
-        padding: 64px 0;
+        padding: 3vh 0;
     }
 
     .about-grid,

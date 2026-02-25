@@ -184,12 +184,13 @@ body[data-theme="dark"] .list-page__video-wrapper {
     /* タイトルの装飾が切れないようにスマホ等で調整しやすく */
     position: relative;
     padding: 64px 32px 0 32px;
-    margin-bottom: 20px;
+    margin-bottom: 32px;
 }
 
 @media (max-width: 768px) {
     .list-page__title-wrap {
-        padding-top: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
         /* スマホではパディングを詰める */
         overflow: visible;
     }
@@ -217,7 +218,7 @@ body[data-theme="dark"] .list-page__video-wrapper {
 @media (max-width: 768px) {
     .list-page__title {
         font-size: 32px;
-        margin: 10px 0;
+        margin: 0;
         overflow-x: visible;
     }
 }
@@ -232,11 +233,16 @@ body[data-theme="dark"] .list-page__video-wrapper {
     display: inline-block;
     vertical-align: bottom;
     line-height: 1.1;
+    overflow: visible;
+    /* Safari での横の見切れ防止 */
 }
 
 .list-page__title .letter {
     display: inline-block;
     will-change: transform;
+    /* Snell Roundhand のような筆記体はみ出し対策 */
+    padding: 0 0.05em;
+    margin: 0 -0.05em;
 }
 
 body[data-theme="dark"] .list-page__title {
@@ -260,12 +266,15 @@ body[data-theme="dark"] .list-page__title {
     top: 0;
     width: 100vw;
     height: 100vh;
-    padding-top: 5vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 /* 初期画面でもリストをスクロール可能にする */
 .list-page__sidebar--pre-selection .list-page__list {
-    max-height: 80vh;
+    flex: 1;
+    min-height: 0;
     overflow-y: scroll;
 }
 
@@ -285,7 +294,7 @@ body[data-theme="dark"] .list-page__title {
     gap: 16px;
     list-style: none;
     margin: 0;
-    padding: 0px 32px 0px 32px;
+    padding: 0 32px 8vh 32px;
     overflow-y: auto;
 }
 
@@ -472,7 +481,9 @@ body[data-theme="dark"] .list-page_line {
     overflow: hidden;
     display: inline-block;
     vertical-align: bottom;
-    padding-right: 5px;
+    padding: 0 10px;
+    /* 横の見切れ防止 */
+    margin: 0 -10px;
 }
 
 .list-page__mask-wrap--title {
@@ -483,6 +494,9 @@ body[data-theme="dark"] .list-page_line {
 .list-page__mask-inner {
     display: inline-block;
     will-change: transform;
+    /* Safari での筆記体・イタリックの端切れ対策 */
+    padding: 0 0.05em;
+    margin: 0 -0.05em;
 }
 
 /* 番号用の span（button 内の最初の wrap 内の inner） */
