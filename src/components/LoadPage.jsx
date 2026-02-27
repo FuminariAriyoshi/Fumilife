@@ -123,9 +123,10 @@ export default function LoadPage({ images = [], onComplete }) {
     if (!infoRef.current || imageMetas.length === 0) return;
 
     const dateEl = infoRef.current.querySelector(".load-page__date");
-    const sourceValueEl = infoRef.current.querySelector(".load-page__source-value");
+    const sourceEl = infoRef.current.querySelector(".load-page__source");
+    const sourceValueEl = sourceEl?.querySelector(".load-page__source-value");
 
-    if (!dateEl || !sourceValueEl) return;
+    if (!dateEl || !sourceEl || !sourceValueEl) return;
 
     // 初期状態: 最初の画像のメタデータを表示
     const firstMeta = imageMetas[0];
@@ -140,15 +141,15 @@ export default function LoadPage({ images = [], onComplete }) {
       tl.call(
         () => {
           setCurrentIndex(index % imageMetas.length);
-          // フェードアウト → テキスト変更 → フェードイン（値の部分だけ）
-          gsap.to([dateEl, sourceValueEl], {
+          // フェードアウト → テキスト変更 → フェードイン（"Shot on"も含めて）
+          gsap.to([dateEl, sourceEl], {
             opacity: 0,
             duration: infoFadeDuration,
             ease: "power2.inOut",
             onComplete: () => {
               dateEl.textContent = meta.postedOn?.trim() || "17/2/26";
               sourceValueEl.textContent = meta.shotOn?.trim() || "iPhone 17 Pro";
-              gsap.to([dateEl, sourceValueEl], {
+              gsap.to([dateEl, sourceEl], {
                 opacity: 1,
                 duration: infoFadeInDuration,
                 ease: "power2.inOut",
@@ -242,7 +243,9 @@ export default function LoadPage({ images = [], onComplete }) {
               {imageMetas[0]?.postedOn?.trim() || "17/2/26"}
             </div>
             <div className="load-page__source">
-              Shot on <span className="load-page__source-value">{imageMetas[0]?.shotOn?.trim() || "iPhone 17 Pro"}</span>
+
+              <span className="load-page__source-value"> Shot on {imageMetas[0]?.shotOn?.trim() || "iPhone 17 Pro"}</span>
+              <span className="load-page__source-value hidden"> Shot on {imageMetas[0]?.shotOn?.trim() || "iPhone 17 Pro"}</span>
             </div>
           </div>
         </div>

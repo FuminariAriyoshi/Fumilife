@@ -10,17 +10,18 @@ export const LoadContext = createContext(false);
  * LoadPageをラップして、ロード状態を管理
  */
 export default function LoadPageWrapper({ children, images = [] }) {
-  const [isLoaded, setIsLoaded] = useState(false);
+  // ロード画面を無効化するため、初期状態を true に設定
+  const [isLoaded, setIsLoaded] = useState(true);
 
   return (
     <LoadContext.Provider value={isLoaded}>
       {children}
-      {!isLoaded && (
+      {/* {!isLoaded && (
         <LoadPage 
           images={images}
           onComplete={() => setIsLoaded(true)} 
         />
-      )}
+      )} */}
     </LoadContext.Provider>
   );
 }

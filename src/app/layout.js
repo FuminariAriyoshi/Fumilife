@@ -15,44 +15,7 @@ export const metadata = {
   description: "Who is Fumi? How does Fumi think? What does Fumi do?",
 };
 
-/**
- * LoadPage用の画像とメタデータを取得（IDが大きい順）
- */
-async function getLoadImages() {
-  try {
-    const client = createClient();
-    const response = await client.getAllByType("mov");
-    const images = response
-      .map((doc) => {
-        const thumbUrl = doc.data?.thumb?.url ?? null;
-        if (!thumbUrl) return null;
-        return {
-          id: doc.id,
-          url: thumbUrl,
-          postedOn: doc.data?.posted_on ?? null,
-          shotOn: doc.data?.shot_on ?? null,
-        };
-      })
-      .filter(Boolean);
-    // IDが大きい順にソート
-    images.sort((a, b) => b.id.localeCompare(a.id));
-    return {
-      // 各画像に対応するメタデータを含む配列
-      images: images.map((img) => ({
-        url: img.url,
-        postedOn: img.postedOn,
-        shotOn: img.shotOn,
-      })),
-    };
-  } catch (err) {
-    console.error("[Prismic] getLoadImages failed:", err);
-    return { images: [] };
-  }
-}
-
 export default async function RootLayout({ children }) {
-  const loadData = await getLoadImages();
-
   return (
     <html lang="en">
       <body data-theme="dark">
@@ -73,7 +36,7 @@ export default async function RootLayout({ children }) {
         <GoogleAnalytics />
         <Cursor />
         <PageTransition />
-        <LoadPageWrapper images={loadData.images}>
+        <LoadPageWrapper>
           {children}
         </LoadPageWrapper>
         <SpeedInsights />

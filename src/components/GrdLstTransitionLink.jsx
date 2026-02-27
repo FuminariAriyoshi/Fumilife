@@ -23,8 +23,13 @@ export default function GrdLstTransitionLink({ href, children, ...props }) {
   };
 
   return (
-    <Link href={href} onClick={handleClick} {...props}>
+    <div
+      role="link"
+      style={{ cursor: "pointer" }}
+      onClick={handleClick}
+      {...props}
+    >
       {children}
-    </Link>
+    </div>
   );
 }

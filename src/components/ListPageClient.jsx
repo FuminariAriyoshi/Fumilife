@@ -757,28 +757,19 @@ export default function ListPageClient({ videos = [] }) {
           <ul className="list-page__list" ref={listRef}>
             {videoList.map((video, idx) => (
               <li key={video.id}>
-                <Link
+                <div
                   ref={(el) => {
                     itemRefs.current[idx] = el;
                   }}
-                  href={video.link || "https://www.instagram.com/fumilife__a/"}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className={`list-page__item ${idx === selectedIndex ? "list-page__item--active" : ""}`}
-                  onClick={(e) => {
-                    // if (isAnimatingRef.current) return;
-                    // if (!hasSelectedVideo) {
-                    //   clickPositionRef.current = { x: e.clientX, y: e.clientY };
-                    //   // 全てのリストアイテムのテキストを上に消すアニメーションを実行
-                    //   const allInnerTexts = Array.from(document.querySelectorAll(".list-page__mask-inner"));
-                    //   clickedTextAnimation(allInnerTexts, 0.5, "power2.inOut");
-                    //   setSelectedIndex(idx);
-                    //   setHasSelectedVideo(true);
-                    // } else {
-                    //   setSelectedIndex(idx);
-                    // }
+                  onClick={() => {
                     setSelectedIndex(idx);
+                    const url = video.link || "https://www.instagram.com/fumilife__a/";
+                    window.open(url, '_blank', 'noopener,noreferrer');
                   }}
+                  role="button"
+                  tabIndex={0}
+                  style={{ cursor: "pointer" }}
                   aria-pressed={idx === selectedIndex}
                 >
                   <span className="list-page__mask-wrap">
@@ -795,7 +786,7 @@ export default function ListPageClient({ videos = [] }) {
                     )}
                   </span>
                   <div className="list-page__item-line" />
-                </Link>
+                </div>
               </li>
             ))}
           </ul>

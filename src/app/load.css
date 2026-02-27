@@ -7,7 +7,8 @@
     height: 100vh;
     background: #eeeeee;
     z-index: 10000;
-    cursor: auto !important; /* loadページではカーソルを表示 */
+    cursor: auto !important;
+    /* loadページではカーソルを表示 */
     overflow: hidden;
 }
 
@@ -16,7 +17,8 @@ body[data-theme="dark"] .load-page {
 }
 
 .load-page * {
-    cursor: auto !important; /* loadページ内のすべての要素でカーソルを表示 */
+    cursor: auto !important;
+    /* loadページ内のすべての要素でカーソルを表示 */
 }
 
 .load-page__content {
@@ -47,7 +49,7 @@ body[data-theme="dark"] .load-page {
 
 .load-page__right-container .load-page__right {
     position: absolute;
-    right:0.5vw;
+    right: 0.5vw;
     white-space: nowrap;
 }
 
@@ -136,6 +138,13 @@ body[data-theme="dark"] .load-page__info {
     font-weight: 200;
 }
 
+.load-page__source-value.hidden {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(0, -100%);
+}
+
 @media (max-width: 768px) {
     .load-page__content {
         flex-direction: column;
@@ -156,14 +165,14 @@ body[data-theme="dark"] .load-page__info {
         align-items: center;
     }
 
-        .load-page__right-container .load-page__right {
-            position: absolute;
-            text-align: center;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-        }
+    .load-page__right-container .load-page__right {
+        position: absolute;
+        text-align: center;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+    }
 
     .load-page__left,
     .load-page__right {

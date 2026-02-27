@@ -136,18 +136,37 @@ export default function TwoDPageClient({ videos = [] }) {
           from: "center",
           grid: "auto"
         },
-        delay: 3
+        delay: 4.5
       });
     }
   }, [isLoadComplete, videoList.length]);
 
-  // 文字の切り替えアニメーション（4秒ごとに更新）
+  // 文字の切り替えアニメーション
+  // 最初の3秒（delay中）は1秒ごと、その後は4秒ごとに更新
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (!isLoadComplete) return;
+
+    let intervalId;
+
+    // 最初の高速切り替え（1秒ごと）
+    const initialInterval = setInterval(() => {
       setTextIndex((prev) => (prev + 1) % 3);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+    }, 1500);
+
+    // 3秒後に通常の切り替え（4秒ごと）に移行
+    const timeoutId = setTimeout(() => {
+      clearInterval(initialInterval);
+      intervalId = setInterval(() => {
+        setTextIndex((prev) => (prev + 1) % 3);
+      }, 4000);
+    }, 4500);
+
+    return () => {
+      clearInterval(initialInterval);
+      if (intervalId) clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, [isLoadComplete]);
 
   useEffect(() => {
     if (videoList.length === 0) return;
@@ -518,7 +537,7 @@ export default function TwoDPageClient({ videos = [] }) {
           )}
         </div>
       </section>
-      <div className={`centerTextWrapper ${isZoomed ? "centerTextWrapper--hidden" : ""}`}>
+      <div className={`centerTextWrapper ${isZoomed || !isLoadComplete ? "centerTextWrapper--hidden" : ""}`}>
         {["Who Fumi Is", "What Fumi Values", "How Fumi Thinks"].map((text, i) => (
           <div
             key={text}
@@ -529,7 +548,7 @@ export default function TwoDPageClient({ videos = [] }) {
         ))}
       </div>
       {/* 四辺に白グラデーションの固定オーバーレイ（動画より前面） */}
-      <div className="glid-edge-gradient" aria-hidden />
+      <div className={`glid-edge-gradient ${!isLoadComplete ? "glid-edge-gradient--hidden" : ""}`} aria-hidden />
     </main>
   );
 }

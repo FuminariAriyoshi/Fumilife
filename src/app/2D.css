@@ -65,6 +65,11 @@ body main {
     background-size: 100% 20%, 100% 20%, 20% 100%, 20% 100%;
     background-position: top center, bottom center, left center, right center;
     background-repeat: no-repeat;
+    transition: opacity 0.8s ease;
+}
+
+.glid-edge-gradient--hidden {
+    opacity: 0;
 }
 
 body[data-theme="dark"] .glid-edge-gradient {
@@ -139,6 +144,8 @@ h6 {
     min-height: 0;
     cursor: pointer;
     pointer-events: auto;
+    opacity: 0;
+    /* 初回表示のチラつき防止 */
 }
 
 .infinite-scroll-container .media img,
