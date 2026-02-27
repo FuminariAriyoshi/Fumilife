@@ -16,35 +16,44 @@ export default function AboutPageClient() {
          * テキストを単語ごとに span でラップする
          */
         const wrapWordsInSpan = (element) => {
+            // すでにラップ済みの場合はスキップ（二重ラップ防止）
+            if (element.querySelector('.word')) return;
+
             const text = element.textContent.trim();
             element.innerHTML = text
                 .split(/\s+/) // 複数の空白にも対応
                 .map(word => {
-                    if (word === "↗") return ARROW_SVG;
+                    // 単語に矢印が含まれている場合に対応
+                    if (word.includes("↗")) {
+                        return `<span class="word" style="display:inline-block; overflow:hidden; vertical-align:middle;"><span class="word-inner" style="display:inline-block;">${ARROW_SVG}</span></span>`;
+                    }
                     return `<span class="word" style="display:inline-block; overflow:hidden; vertical-align:bottom;"><span class="word-inner" style="display:inline-block;">${word}</span></span>`;
                 })
                 .join(' ');
         };
 
         const ctx = gsap.context(() => {
-            // Target elements for word reveal
-            const introItems = document.querySelectorAll(".about-bio li");
-            const valueItems = document.querySelectorAll(".about-value li");
-            const socialLinks = document.querySelectorAll(".about-socials-col a");
-            const projectItems = document.querySelectorAll(".about-lists-right-wrapper li");
+            if (!containerRef.current) return;
+            const q = gsap.utils.selector(containerRef);
+
+            // Target elements for word reveal - scope to container
+            const introItems = q(".about-bio li");
+            const valueItems = q(".about-value li");
+            const socialLinks = q(".about-socials-col a");
+            const projectItems = q(".about-lists-right-wrapper li");
 
             introItems.forEach(item => wrapWordsInSpan(item));
             valueItems.forEach(item => wrapWordsInSpan(item));
             socialLinks.forEach(link => wrapWordsInSpan(link));
             projectItems.forEach(item => wrapWordsInSpan(item));
 
-            const labels = document.querySelectorAll(".about-list-title");
-            const introWords = document.querySelectorAll(".about-bio li .word-inner");
-            const valueWords = document.querySelectorAll(".about-value li .word-inner");
-            const socialWords = document.querySelectorAll(".about-socials-col a .word-inner");
-            const projectWords = document.querySelectorAll(".about-lists-right-wrapper li .word-inner");
+            const labels = q(".about-list-title");
+            const introWords = q(".about-bio li .word-inner");
+            const valueWords = q(".about-value li .word-inner");
+            const socialWords = q(".about-socials-col a .word-inner");
+            const projectWords = q(".about-lists-right-wrapper li .word-inner");
 
-            const parents = document.querySelectorAll(".about-bio, .about-value, .about-socials-col, .about-lists-right-wrapper");
+            const parents = q(".about-bio, .about-value, .about-socials-col, .about-lists-right-wrapper");
 
             // Timeline for coordinated reveal (Page Load Initial Animation)
             const tl = gsap.timeline({
