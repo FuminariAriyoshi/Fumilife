@@ -13,6 +13,18 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 export const metadata = {
   title: "FUMILIFE",
   description: "Who is Fumi? How does Fumi think? What does Fumi do?",
+  openGraph: {
+    title: "FUMILIFE",
+    description: "Who is Fumi? How does Fumi think? What does Fumi do?",
+    siteName: "FUMILIFE",
+    locale: "ja_JP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FUMILIFE",
+    description: "Who is Fumi? How does Fumi think? What does Fumi do?",
+  },
 };
 
 export default async function RootLayout({ children }) {
